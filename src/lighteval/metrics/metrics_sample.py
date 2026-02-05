@@ -51,7 +51,10 @@ from lighteval.metrics.normalizations import (
     remove_braces,
     remove_braces_and_strip,
 )
-from lighteval.metrics.utils.judge_utils import get_judge_prompt_simpleqa, process_judge_response_simpleqa
+from lighteval.metrics.utils.judge_utils import (
+    get_judge_prompt_simpleqa,
+    process_judge_response_simpleqa,
+)
 from lighteval.metrics.utils.llm_as_judge import JudgeLM
 from lighteval.models.model_output import ModelResponse
 from lighteval.tasks.requests import Doc
@@ -349,7 +352,9 @@ class NormalizedMultiChoiceProbability(SampleLevelComputation):
         )
         normalized_probs = np.exp(normalized_log_probs)
 
-        normalized_probs = safe_divide(normalized_probs[gold_ixs], np.sum(normalized_probs))
+        normalized_probs = safe_divide(
+            normalized_probs[gold_ixs], np.sum(normalized_probs)
+        )
         gold_idx_agg_prob = self.aggregation_function(normalized_probs)
         return gold_idx_agg_prob
 
@@ -432,7 +437,14 @@ class Recall(SampleLevelComputation):
 
         if self.recall_depth == 1:
             return int(np.argmax(choices_logprobs) in gold_ixs)
-        return int(any(ix in gold_ixs for ix in np.array(choices_logprobs).argsort()[::-1][: self.recall_depth]))
+        return int(
+            any(
+                ix in gold_ixs
+                for ix in np.array(choices_logprobs).argsort()[::-1][
+                    : self.recall_depth
+                ]
+            )
+        )
 
 
 class MRR(SampleLevelComputation):
@@ -461,10 +473,14 @@ class MRR(SampleLevelComputation):
 
         if self.length_normalization:
             choices_logprobs = [
-                choice_logprob / len(choice) for choice_logprob, choice in zip(choices_logprobs, doc.choices)
+                choice_logprob / len(choice)
+                for choice_logprob, choice in zip(choices_logprobs, doc.choices)
             ]
 
-        ranked_choices = [sorted(choices_logprobs, reverse=True).index(choices_logprobs[gold]) for gold in gold_ixs]
+        ranked_choices = [
+            sorted(choices_logprobs, reverse=True).index(choices_logprobs[gold])
+            for gold in gold_ixs
+        ]
         return 1.0 / (min(ranked_choices) + 1)
 
 
@@ -513,7 +529,9 @@ class ROUGE(SampleLevelComputation):
                 default tokenizer will be used.
         """
         if aggregation_function and bootstrap:
-            logger.warning("Can't use both bootstrapping and an aggregation function in Rouge. Keeping bootstrap.")
+            logger.warning(
+                "Can't use both bootstrapping and an aggregation function in Rouge. Keeping bootstrap."
+            )
         self.aggregation_function = aggregation_function
         if self.aggregation_function is None:
             self.aggregation_function = np.mean
@@ -530,7 +548,9 @@ class ROUGE(SampleLevelComputation):
         self.tokenizer = tokenizer
         self.scorer = None
 
-    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs) -> float | dict:
+    def compute(
+        self, doc: Doc, model_response: ModelResponse, **kwargs
+    ) -> float | dict:
         """Computes the metric(s) over a list of golds and predictions for one single sample.
 
         Args:
@@ -548,7 +568,9 @@ class ROUGE(SampleLevelComputation):
         predictions = model_response.final_text
 
         if self.scorer is None:
-            self.scorer = rouge_scorer.RougeScorer(self.methods, tokenizer=self.tokenizer)
+            self.scorer = rouge_scorer.RougeScorer(
+                self.methods, tokenizer=self.tokenizer
+            )
 
         # Normalize
         if self.normalize_gold:
@@ -558,7 +580,9 @@ class ROUGE(SampleLevelComputation):
             predictions = [self.normalize_pred(p) for p in predictions]
 
         if self.bootstrap:  # For t5 style rouge score
-            scores = self._rouge_score_with_bootsrap(golds=golds, predictions=predictions)
+            scores = self._rouge_score_with_bootsrap(
+                golds=golds, predictions=predictions
+            )
         elif self.multiple_golds:
             scores = self._rouge_score_multi_golds(golds=golds, preds=predictions)
         else:
@@ -575,7 +599,9 @@ class ROUGE(SampleLevelComputation):
                 cur_scores = self.scorer.score(gold, pred)
                 for method in self.methods:
                     scores[method].append(cur_scores[method].fmeasure)
-        return {method: self.aggregation_function(scores[method]) for method in self.methods}
+        return {
+            method: self.aggregation_function(scores[method]) for method in self.methods
+        }
 
     def _rouge_score_multi_golds(self, golds: list[str], preds: list[str]):
         scores = {m: [] for m in self.methods}
@@ -583,7 +609,9 @@ class ROUGE(SampleLevelComputation):
             cur_scores = self.scorer.score_multi(golds, pred)
             for method in self.methods:
                 scores[method].append(cur_scores[method].fmeasure)
-        return {method: self.aggregation_function(scores[method]) for method in self.methods}
+        return {
+            method: self.aggregation_function(scores[method]) for method in self.methods
+        }
 
     def _rouge_score_with_bootsrap(self, golds: list[str], predictions: list[str]):
         from rouge_score import scoring
@@ -625,7 +653,9 @@ class BertScore(SampleLevelComputation):
         self.normalize_gold = normalize_gold
         self.normalize_pred = normalize_pred
 
-    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs) -> dict[str, float]:
+    def compute(
+        self, doc: Doc, model_response: ModelResponse, **kwargs
+    ) -> dict[str, float]:
         """Computes the prediction, recall and f1 score using the bert scorer.
 
         Args:
@@ -640,10 +670,15 @@ class BertScore(SampleLevelComputation):
         predictions = model_response.final_text
 
         if self.bert_scorer is None:
-            logger.warning("The first metric computation step might be a bit longer as we need to download the model.")
+            logger.warning(
+                "The first metric computation step might be a bit longer as we need to download the model."
+            )
             # We only initialize on first compute
             self.bert_scorer = BERTScorer(
-                model_type="microsoft/deberta-large-mnli", lang="en", rescale_with_baseline=True, num_layers=9
+                model_type="microsoft/deberta-large-mnli",
+                lang="en",
+                rescale_with_baseline=True,
+                num_layers=9,
             )
         golds = as_list(golds)
         predictions = as_list(predictions)
@@ -655,7 +690,11 @@ class BertScore(SampleLevelComputation):
             predictions = [self.normalize_pred(p) for p in predictions]
 
         p, r, f = self.bert_scorer.score(predictions, golds)
-        return {"BERTScore-P": p[0].item(), "BERTScore-R": r[0].item(), "BERTScore-F": f[0].item()}
+        return {
+            "BERTScore-P": p[0].item(),
+            "BERTScore-R": r[0].item(),
+            "BERTScore-F": f[0].item(),
+        }
 
 
 class Extractiveness(SampleLevelComputation):
@@ -682,7 +721,9 @@ class Extractiveness(SampleLevelComputation):
         self.input_column = input_column
         self.language = language
 
-    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs) -> dict[str, float]:
+    def compute(
+        self, doc: Doc, model_response: ModelResponse, **kwargs
+    ) -> dict[str, float]:
         """Compute the extractiveness of the predictions.
 
         This method calculates coverage, density, and compression scores for a single
@@ -735,7 +776,9 @@ class Faithfulness(SampleLevelComputation):
         self.normalize_pred = normalize_pred
         self.input_column = input_column
 
-    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs) -> dict[str, float]:
+    def compute(
+        self, doc: Doc, model_response: ModelResponse, **kwargs
+    ) -> dict[str, float]:
         """Compute the faithfulness of the predictions.
 
         The SummaCZS (Summary Content Zero-Shot) model is used with configurable granularity and model variation.
@@ -779,7 +822,9 @@ class BLEURT(SampleLevelComputation):
     @property
     def model(self):
         if self._model is None:
-            self._model = AutoModelForSequenceClassification.from_pretrained("Elron/bleurt-tiny-512")
+            self._model = AutoModelForSequenceClassification.from_pretrained(
+                "Elron/bleurt-tiny-512"
+            )
             self._model.eval()
         return self._model
 
@@ -798,7 +843,9 @@ class BLEURT(SampleLevelComputation):
         golds = doc.get_golds()
         if len(predictions) == 1:
             predictions = predictions * len(golds)
-        scores = self.model(**self.tokenizer(golds, predictions, return_tensors="pt"))[0].squeeze()
+        scores = self.model(**self.tokenizer(golds, predictions, return_tensors="pt"))[
+            0
+        ].squeeze()
         return scores.item()
 
 
@@ -841,7 +888,9 @@ class BLEU(SampleLevelComputation):
             float: Score over the current prediction.
         """
         weights = [1 if ix == self.n_gram else 0 for ix in range(1, 5)]
-        return sentence_bleu([word_tokenize(g) for g in gold], word_tokenize(pred), weights=weights)
+        return sentence_bleu(
+            [word_tokenize(g) for g in gold], word_tokenize(pred), weights=weights
+        )
 
 
 class StringDistance(SampleLevelComputation):
@@ -856,7 +905,11 @@ class StringDistance(SampleLevelComputation):
             metric_types (list[str] | str): Can be one or any of `longest_common_prefix_length`, `edit_distance` or `edit_similarity`.
             strip_prediction (bool, optional): Whether to strip the prediction. Defaults to True.
         """
-        allowed_values = ["longest_common_prefix_length", "edit_distance", "edit_similarity"]
+        allowed_values = [
+            "longest_common_prefix_length",
+            "edit_distance",
+            "edit_similarity",
+        ]
         metric_types = as_list(metric_types)
         if any(metric_type not in allowed_values for metric_type in metric_types):
             raise ValueError(
@@ -864,7 +917,11 @@ class StringDistance(SampleLevelComputation):
             )
         self.metric_types = metric_types
         self.strip_prediction = strip_prediction
-        self.sample_aggregations = {"longest_common_prefix_length": max, "edit_distance": min, "edit_similarity": max}
+        self.sample_aggregations = {
+            "longest_common_prefix_length": max,
+            "edit_distance": min,
+            "edit_similarity": max,
+        }
 
     def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         """Computes all the requested metrics on the golds and prediction.
@@ -897,17 +954,25 @@ class StringDistance(SampleLevelComputation):
             truncated_reference = reference[: len(completion)]
 
             completion_tokens = np.array(TreebankWordTokenizer().tokenize(completion))
-            truncated_reference_tokens = np.array(TreebankWordTokenizer().tokenize(truncated_reference))
+            truncated_reference_tokens = np.array(
+                TreebankWordTokenizer().tokenize(truncated_reference)
+            )
 
             if "edit_distance" in self.metric_types:
-                result["edit_distance"].append(edit_distance(s1=completion_tokens, s2=truncated_reference_tokens))
+                result["edit_distance"].append(
+                    edit_distance(s1=completion_tokens, s2=truncated_reference_tokens)
+                )
             if "edit_similarity" in self.metric_types:
                 result["edit_similarity"].append(
-                    self.edit_similarity(s1=completion_tokens, s2=truncated_reference_tokens)
+                    self.edit_similarity(
+                        s1=completion_tokens, s2=truncated_reference_tokens
+                    )
                 )
             if "longest_common_prefix_length" in self.metric_types:
                 result["longest_common_prefix_length"].append(
-                    self.longest_common_prefix_length(s1=completion_tokens, s2=truncated_reference_tokens)
+                    self.longest_common_prefix_length(
+                        s1=completion_tokens, s2=truncated_reference_tokens
+                    )
                 )
 
         final_result = {}
@@ -940,14 +1005,22 @@ class StringDistance(SampleLevelComputation):
 
 
 class JudgeLLM(SampleLevelComputation):
-    available_models_openai = ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo", "gpt-4", "gpt-4o-2024-08-06"]
+    available_models_openai = [
+        "gpt-3.5-turbo",
+        "gpt-4o",
+        "gpt-4-turbo",
+        "gpt-4",
+        "gpt-4o-2024-08-06",
+    ]
 
     def __init__(
         self,
         judge_model_name: str,
         template: Callable,
         process_judge_response: Callable,
-        judge_backend: Literal["litellm", "openai", "transformers", "vllm", "tgi", "inference-providers"],
+        judge_backend: Literal[
+            "litellm", "openai", "transformers", "vllm", "tgi", "inference-providers"
+        ],
         short_judge_name: str | None = None,
         response_format: BaseModel | None = None,
         url: str | None = None,
@@ -956,12 +1029,16 @@ class JudgeLLM(SampleLevelComputation):
         max_tokens: int | None = None,
         backend_options: dict | None = None,
     ) -> None:
-        logger.debug(f"Initializing JudgeLLM with backend: {judge_backend}, model: {judge_model_name}")
+        logger.debug(
+            f"Initializing JudgeLLM with backend: {judge_backend}, model: {judge_model_name}"
+        )
 
         match judge_backend:
             case "openai":
                 if judge_model_name not in self.available_models_openai:
-                    raise ValueError(f"{judge_model_name} not in available models for llm as a judge metric")
+                    raise ValueError(
+                        f"{judge_model_name} not in available models for llm as a judge metric"
+                    )
                 api_key = api_key or os.getenv("OPENAI_API_KEY")
                 logger.debug("Using OpenAI backend for llm as a judge metric")
 
@@ -983,10 +1060,14 @@ class JudgeLLM(SampleLevelComputation):
                 api = HfApi()
                 models = api.list_models(model_name=judge_model_name)
                 if not models:
-                    raise ValueError(f"{judge_model_name} not found on Hugging Face Hub")
+                    raise ValueError(
+                        f"{judge_model_name} not found on Hugging Face Hub"
+                    )
 
             case _:
-                raise ValueError(f"{judge_backend} is not a valid backend for llm as a judge metric")
+                raise ValueError(
+                    f"{judge_backend} is not a valid backend for llm as a judge metric"
+                )
 
         self.short_judge_name = short_judge_name
         self.judge = JudgeLM(
@@ -1017,7 +1098,9 @@ class JudgeLLMSimpleQA(JudgeLLM):
             short_judge_name="gpt4o",
         )
 
-    def compute(self, responses: list[ModelResponse], docs: list[Doc], **kwargs) -> list:
+    def compute(
+        self, responses: list[ModelResponse], docs: list[Doc], **kwargs
+    ) -> list:
         """Compute the score of a generative task using a llm as a judge.
         The generative task can be multiturn with 2 turns max, in that case, we
         return scores for turn 1 and 2. Also returns user_prompt and judgement
@@ -1028,7 +1111,9 @@ class JudgeLLMSimpleQA(JudgeLLM):
         golds = [formatted_doc.get_golds()[0] for formatted_doc in docs]
         predictions = [response.final_text[0] for response in responses]
 
-        scores, messages, judgements = self.judge.evaluate_answer_batch(questions, predictions, options, golds)
+        scores, messages, judgements = self.judge.evaluate_answer_batch(
+            questions, predictions, options, golds
+        )
 
         metrics = []
         for i in range(len(docs)):
@@ -1064,10 +1149,14 @@ class JudgeLLMMTBench(JudgeLLM):
         query_context_2 = {"query": questions[1], "context": predictions[0]}
 
         score_turn_1, message_turn_1, judgement_turn_1 = self.judge.evaluate_answer(
-            question=json.dumps(query_context_1, indent=2), answer=predictions[0], gold=golds[0] if golds else None
+            question=json.dumps(query_context_1, indent=2),
+            answer=predictions[0],
+            gold=golds[0] if golds else None,
         )
         score_turn_2, message_turn_2, judgement_turn_2 = self.judge.evaluate_answer(
-            question=json.dumps(query_context_2, indent=2), answer=predictions[1], gold=golds[1] if golds else None
+            question=json.dumps(query_context_2, indent=2),
+            answer=predictions[1],
+            gold=golds[1] if golds else None,
         )
 
         return {
@@ -1090,7 +1179,9 @@ class JudgeLLMMixEval(JudgeLLM):
         golds = [doc.get_golds()[0] for doc in docs]
         predictions = [response.final_text[0] for response in responses]
 
-        scores, messages, judgements = self.judge.evaluate_answer_batch(questions, predictions, options, golds)
+        scores, messages, judgements = self.judge.evaluate_answer_batch(
+            questions, predictions, options, golds
+        )
 
         metrics = []
         for i in range(len(docs)):
@@ -1114,7 +1205,9 @@ class SamplingMetric:
         self,
         normalize: Callable | str | None = None,
         strip_strings: bool = False,
-        sample_scoring_function: Callable[[Doc, ModelResponse], float] | str | None = None,
+        sample_scoring_function: (
+            Callable[[Doc, ModelResponse], float] | str | None
+        ) = None,
     ):
         if isinstance(normalize, str):
             import lighteval.metrics.normalizations
@@ -1294,7 +1387,9 @@ class PassAtK(SamplingMetric, SampleLevelComputation):
         predictions = model_response.final_text
         if self.n is None:
             self.n = len(predictions)
-            logger.warning("n undefined in the pass@k. We assume it's the same as the sample's number of predictions.")
+            logger.warning(
+                "n undefined in the pass@k. We assume it's the same as the sample's number of predictions."
+            )
         elif len(predictions) < self.n:
             logger.warning(f"Number of predictions is less than {self.n} for pass@k.")
 
@@ -1311,7 +1406,9 @@ class PassAtK(SamplingMetric, SampleLevelComputation):
             new_model_response = ModelResponse(
                 text=[cur_pred],
             )
-            all_scores.append(self.compute_score(doc=new_doc, model_response=new_model_response))
+            all_scores.append(
+                self.compute_score(doc=new_doc, model_response=new_model_response)
+            )
 
         return self.pass_at_k(all_scores)
 
@@ -1454,3 +1551,62 @@ class GPassAtK(SamplingMetric, SampleLevelComputation):
 
     def num_samples(self):
         return self.n if self.n is not None else self.k
+
+
+class TextTaggingMetric(SampleLevelComputation):
+    def compute(self, model_response, doc) -> float:
+        gold_topics = [
+            g.strip().lower()
+            for g in doc.specific.get("gold_topics", [])
+            if isinstance(g, str) and g.strip()
+        ]
+        if not gold_topics:
+            return 0.0
+        if (
+            hasattr(model_response, "text_post_processed")
+            and model_response.text_post_processed
+        ):
+            pred_text = model_response.text_post_processed[0]
+        elif hasattr(model_response, "text") and model_response.text:
+            pred_text = (
+                model_response.text[0]
+                if isinstance(model_response.text, list)
+                else model_response.text
+            )
+        else:
+            pred_text = str(model_response)
+        pred_tags = [p.strip().lower() for p in pred_text.split(",") if p.strip()]
+        if not pred_tags:
+            return 0.0
+        used = set()
+        scores = []
+        for g in gold_topics:
+            best_score, best_j = 0.0, None
+            for j, p in enumerate(pred_tags):
+                if j in used:
+                    continue
+                sim = self.char_ngram_f1(g, p, n=3)
+                if sim > best_score:
+                    best_score, best_j = sim, j
+            if best_j is not None:
+                used.add(best_j)
+            scores.append(best_score)
+        return sum(scores) / len(gold_topics)
+
+    @abstractmethod
+    def char_ngram_f1(self, a: str, b: str, n: int = 3) -> float:
+        def ngrams(s, n):
+            s = s.lower().replace(" ", "")
+            return {s[i : i + n] for i in range(len(s) - n + 1)} if len(s) >= n else {s}
+
+        A, B = ngrams(a, n), ngrams(b, n)
+        if not A or not B:
+            return 0.0
+        overlap = len(A & B)
+        precision = overlap / len(B)
+        recall = overlap / len(A)
+        return (
+            2 * precision * recall / (precision + recall)
+            if (precision + recall)
+            else 0.0
+        )
