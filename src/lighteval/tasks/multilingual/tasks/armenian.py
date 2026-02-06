@@ -1,6 +1,5 @@
 from lighteval.tasks.lighteval_task import LightevalTaskConfig, Doc
 from lighteval.metrics.metrics import Metrics
-from .text_tagging_metric import text_tagging_metric
 
 prompt_language = "en"
 SIB200_LABEL_MAP = {

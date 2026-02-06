@@ -1554,7 +1554,7 @@ class GPassAtK(SamplingMetric, SampleLevelComputation):
 
 
 class TextTaggingMetric(SampleLevelComputation):
-    def compute(self, model_response, doc) -> float:
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         gold_topics = [
             g.strip().lower()
             for g in doc.specific.get("gold_topics", [])
@@ -1593,7 +1593,6 @@ class TextTaggingMetric(SampleLevelComputation):
             scores.append(best_score)
         return sum(scores) / len(gold_topics)
 
-    @abstractmethod
     def char_ngram_f1(self, a: str, b: str, n: int = 3) -> float:
         def ngrams(s, n):
             s = s.lower().replace(" ", "")
