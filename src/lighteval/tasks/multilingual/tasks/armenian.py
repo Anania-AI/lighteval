@@ -1,5 +1,18 @@
+import numpy as np
+import json
+import re
 from lighteval.tasks.lighteval_task import LightevalTaskConfig, Doc
 from lighteval.metrics.metrics import Metrics
+from lighteval.models.model_output import ModelResponse
+from lighteval.metrics.utils.metric_utils import (
+    SampleLevelMetric,
+    SamplingMethod,
+    SampleLevelComputation,
+)
+from lighteval.metrics.armenian_metrics import (
+    pos_metric,
+    ner_span_metric,
+)
 
 prompt_language = "en"
 SIB200_LABEL_MAP = {
@@ -102,34 +115,6 @@ def prompt_sentiment(line, task_name=None):
     )
 
 
-def prompt_urgency(line, task_name=None):
-    full_text = f"{line['subject']}\n{line['body']}"
-    eng_label = line["priority"]
-    gold = URGENCY_LABEL_MAP[eng_label]
-    query = PROMPTS_URGENCY["query"][prompt_language].format(text=full_text)
-    return Doc(
-        task_name=task_name,
-        query=query,
-        choices=URGENCY_LABELS,
-        gold_index=URGENCY_LABELS.index(gold),
-        instruction=PROMPTS_URGENCY["instruction"][prompt_language],
-    )
-
-
-def prompt_text_tagging(line, task_name=None):
-    query = PROMPTS_TEXT_TAGGING["query"][prompt_language].format(text=line["text"])
-    return Doc(
-        task_name=task_name,
-        query=query,
-        choices=[],
-        gold_index=0,
-        instruction=PROMPTS_TEXT_TAGGING["instruction"][prompt_language],
-        specific={"gold_topics": line["keywords"]},
-    )
-
-
-prompt_language = "en"
-
 PROMPTS_INSTRUCTION = {
     "instruction": {
         "hy": "Կարդա պահանջը և տրամադրված կոնտեքստը և պատասխանիր հարցին։\n",
@@ -151,34 +136,6 @@ PROMPTS_QA_CONTEXT = {
         "en": "Context: {context}\nQuestion: {question}",
     },
 }
-
-
-def prompt_alpaca(line, task_name=None):
-    context = line.get("input", "")
-    query = PROMPTS_INSTRUCTION["query"][prompt_language].format(
-        instruction=line["instruction"], context=context
-    )
-    return Doc(
-        task_name=task_name,
-        query=query,
-        choices=[line["output"]],
-        gold_index=0,
-        instruction=PROMPTS_INSTRUCTION["instruction"][prompt_language],
-    )
-
-
-def prompt_databricks(line, task_name=None):
-    context = line.get("context", "")
-    query = PROMPTS_INSTRUCTION["query"][prompt_language].format(
-        instruction=line["instruction"], context=context
-    )
-    return Doc(
-        task_name=task_name,
-        query=query,
-        choices=[line["response"]],
-        gold_index=0,
-        instruction=PROMPTS_INSTRUCTION["instruction"][prompt_language],
-    )
 
 
 def prompt_ms_marco(line, task_name=None):
@@ -247,9 +204,6 @@ def prompt_squad(line, task_name=None):
     )
 
 
-from lighteval.metrics.metrics import Metrics
-
-prompt_language = "en"
 PROMPTS_CONTEXT_MCQA = {
     "instruction": {
         "hy": "Ընտրիր ճիշտ պատասխանը տրված տարբերակներից` օգտվելով կոնտեքստից։\n",
@@ -356,11 +310,6 @@ def prompt_dream(line, task_name=None):
     )
 
 
-from lighteval.metrics.metrics import Metrics
-
-prompt_language = "en"
-
-
 PROMPTS_MCQA = {
     "instruction": {
         "hy": "Պատասխանիր հարցին՝ ընտրելով ճիշտ տարբերակը։\n",
@@ -397,10 +346,6 @@ def prompt_include(line, task_name=None):
     )
 
 
-from .ner_span_metric import ner_span_metric
-from .pos_metric import pos_metric
-
-prompt_language = "en"
 UPOS_TAGS = [
     "Գոյական",
     "Ածական",
@@ -519,26 +464,6 @@ def prompt_ud_armtdp(line, task_name=None):
     )
 
 
-def prompt_alpaca(line, task_name=None):
-    return Doc(
-        task_name=task_name,
-        query=line["instruction"],
-        choices=[line["output"]],
-        gold_index=0,
-        instruction="",
-    )
-
-
-def prompt_databricks(line, task_name=None):
-    return Doc(
-        task_name=task_name,
-        query=line["instruction"],
-        choices=[line["response"]],
-        gold_index=0,
-        instruction="",
-    )
-
-
 def prompt_qa(line, task_name=None):
     return Doc(
         task_name=task_name,
@@ -548,26 +473,6 @@ def prompt_qa(line, task_name=None):
         instruction="",
     )
 
-
-def prompt_factual_memorisation(line, task_name=None):
-    """Prompt function for factual-memorisation subset.
-    Dataset structure: {'collection': 'eng'|'factual'|'memorisation', 'prompt': '...', 'completion': '...'}
-    """
-    query = f"Question: {line['prompt']}\nAnswer:"
-    return Doc(
-        task_name=task_name,
-        query=query,
-        choices=[line["completion"]],
-        gold_index=0,
-        instruction="",
-        specific={"collection": line.get("collection", "unknown")},
-    )
-
-
-from lighteval.metrics.metrics import Metrics
-from .summ_para_translation_metric import BertScoreArm, ParaphraseBestMatch
-
-prompt_language = "en"  # or 'hy'
 
 PROMPTS_EMAIL_SUM = {
     "instruction": {
@@ -663,17 +568,6 @@ def prompt_translation(line, task_name=None):
     )
 
 
-import numpy as np
-import json
-import re
-from lighteval.metrics.utils.metric_utils import (
-    SampleLevelMetric,
-    SampleLevelMetricGrouping,
-    SamplingMethod,
-    SampleLevelComputation,
-)
-
-prompt_language = "en"
 PUNCTUATION_CHARS = set([",", "՝", ":", "։", "`"])
 
 PROMPTS_SPACE_FIX = {
@@ -768,7 +662,7 @@ def prompt_punctuation(line, task_name=None):
 
 
 class SpaceAccuracyComputation(SampleLevelComputation):
-    def compute(self, model_response, doc, **kwargs) -> float:
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         gold = doc.specific["gold"].strip()
         pred = extract_fixed_text(model_response)
         gold_words, pred_words = gold.split(), pred.split()
@@ -790,7 +684,7 @@ class SpaceAccuracyComputation(SampleLevelComputation):
 
 
 class PunctuationAccuracyComputation(SampleLevelComputation):
-    def compute(self, model_response, doc, **kwargs) -> float:
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         gold = doc.choices[0].strip()
         pred = extract_fixed_text(model_response).strip()
 
@@ -838,148 +732,6 @@ punctuation_accuracy_metric = SampleLevelMetric(
 )
 
 
-# Custom metric for factual-memorisation with collection-based scoring
-_collection_scores_storage = (
-    []
-)  # Store (score, collection) pairs for corpus-level aggregation
-_collection_scores_cache: dict[str, list[float]] = (
-    {}
-)  # Cache for corpus-level aggregation
-
-
-def _token_set(text: str) -> set[str]:
-    """Extract tokens from text."""
-    return {token for token in text.lower().split() if token}
-
-
-class FactualMemorisationComputation(SampleLevelComputation):
-    """Compute word overlap for eng/factual, bigram overlap for memorisation."""
-
-    def compute(self, model_response, doc, **kwargs) -> dict:
-        collection = doc.specific.get("collection", "unknown")
-        gold = doc.choices[0].strip() if doc.choices else ""
-
-        # Get prediction from model response
-        if (
-            hasattr(model_response, "text_post_processed")
-            and model_response.text_post_processed
-        ):
-            pred = model_response.text_post_processed[0].strip()
-        elif hasattr(model_response, "text") and model_response.text:
-            pred = model_response.text[0].strip()
-        else:
-            pred = ""
-
-        # Initialize all metrics to 0.0
-        eng_score = 0.0
-        factual_score = 0.0
-        memorisation_score = 0.0
-
-        if collection == "memorisation":
-            # Use bigram overlap for memorisation (from evaluate_memorisation_bigram_overlap)
-            reference_tokens = gold.lower().split()
-            predicted_tokens = pred.lower().split()
-
-            reference_bigrams = {
-                (reference_tokens[i], reference_tokens[i + 1])
-                for i in range(len(reference_tokens) - 1)
-            }
-            predicted_bigrams = {
-                (predicted_tokens[i], predicted_tokens[i + 1])
-                for i in range(len(predicted_tokens) - 1)
-            }
-
-            if not reference_bigrams:
-                memorisation_score = 1.0
-            else:
-                overlap = sum(
-                    bigram in predicted_bigrams for bigram in reference_bigrams
-                )
-                memorisation_score = overlap / len(reference_bigrams)
-        else:
-            # Use word overlap for eng and factual (from evaluate_word_overlap)
-            reference_tokens = _token_set(gold)
-            predicted_tokens = _token_set(pred)
-
-            if not reference_tokens:
-                score = 1.0
-            else:
-                score = sum(
-                    token in predicted_tokens for token in reference_tokens
-                ) / len(reference_tokens)
-
-            # Assign score based on collection type
-            if collection == "eng":
-                eng_score = score
-            elif collection == "factual":
-                factual_score = score
-
-        # Store score with collection for corpus-level aggregation
-        # Get the score for the current collection type
-        if collection == "eng":
-            score = eng_score
-        elif collection == "factual":
-            score = factual_score
-        elif collection == "memorisation":
-            score = memorisation_score
-        else:
-            score = 0.0
-        _collection_scores_storage.append((score, collection))
-        # Clear cache when new score is added (will be rebuilt on corpus-level call)
-        _collection_scores_cache.clear()
-
-        # Return dictionary with all three metrics
-        return {
-            "eng_overlap": eng_score,
-            "factual_overlap": factual_score,
-            "memorisation_overlap": memorisation_score,
-        }
-
-
-def get_collection_scores_by_type(collection_type: str):
-    """Helper to get scores for a specific collection type."""
-    if not _collection_scores_cache:
-        # Build cache from storage
-        for score, collection in _collection_scores_storage:
-            _collection_scores_cache.setdefault(collection, []).append(score)
-    return _collection_scores_cache.get(collection_type, [])
-
-
-def eng_overlap_corpus_level(sample_scores: list[float]) -> float:
-    """Corpus-level aggregation for eng collection."""
-    scores = get_collection_scores_by_type("eng")
-    return float(np.mean(scores)) if scores else 0.0
-
-
-def factual_overlap_corpus_level(sample_scores: list[float]) -> float:
-    """Corpus-level aggregation for factual collection."""
-    scores = get_collection_scores_by_type("factual")
-    return float(np.mean(scores)) if scores else 0.0
-
-
-def memorisation_overlap_corpus_level(sample_scores: list[float]) -> float:
-    """Corpus-level aggregation for memorisation collection."""
-    scores = get_collection_scores_by_type("memorisation")
-    return float(np.mean(scores)) if scores else 0.0
-
-
-factual_memorisation_metric = SampleLevelMetricGrouping(
-    metric_name=["eng_overlap", "factual_overlap", "memorisation_overlap"],
-    higher_is_better={
-        "eng_overlap": True,
-        "factual_overlap": True,
-        "memorisation_overlap": True,
-    },
-    category=SamplingMethod.GENERATIVE,
-    sample_level_fn=FactualMemorisationComputation(),
-    corpus_level_fn={
-        "eng_overlap": eng_overlap_corpus_level,
-        "factual_overlap": factual_overlap_corpus_level,
-        "memorisation_overlap": memorisation_overlap_corpus_level,
-    },
-)
-
-
 class ArmenianEvalTask(LightevalTaskConfig):
     def __init__(
         self,
@@ -1004,7 +756,6 @@ class ArmenianEvalTask(LightevalTaskConfig):
         super().__init__(
             name=f"armenian_evals:{short_name}",
             prompt_function=prompt_function,
-            suite=["community"],
             hf_repo="Metric-AI/HY-benchmark-ds-clean",
             hf_subset=hf_subset,
             metrics=metrics,
@@ -1022,9 +773,9 @@ TASKS_TABLE = [
     ArmenianEvalTask(
         "topic-14class", "topic-14class", prompt_sib200, [Metrics.loglikelihood_acc]
     ),
-    # ArmenianEvalTask("sentiment", "sentiment", prompt_sentiment, [Metrics.loglikelihood_acc]),
-    # ArmenianEvalTask("urgency", "urgency", prompt_urgency, [Metrics.loglikelihood_acc]),
-    # ArmenianEvalTask("text_tagging", "text_tagging", prompt_text_tagging, [text_tagging_metric], generation=True),
+    ArmenianEvalTask(
+        "sentiment", "sentiment", prompt_sentiment, [Metrics.loglikelihood_acc]
+    ),
     # Text editing
     ArmenianEvalTask(
         "space_fix",
@@ -1041,27 +792,14 @@ TASKS_TABLE = [
         generation=True,
     ),
     # NER / POS
-    # ArmenianEvalTask("finer", "finer", prompt_finer, [ner_span_metric]),
+    ArmenianEvalTask("finer", "finer", prompt_finer, [ner_span_metric]),
     ArmenianEvalTask(
         "pioner", "pioner", prompt_pioner, [ner_span_metric], generation=True
     ),
     ArmenianEvalTask("pos", "pos", prompt_ud_armtdp, [pos_metric], generation=True),
     # Simple QA
     ArmenianEvalTask("arak", "simpleqa", prompt_qa, [Metrics.bleu], generation=True),
-    ArmenianEvalTask(
-        "factual-memorisation",
-        "factual-memorisation",
-        prompt_factual_memorisation,
-        [factual_memorisation_metric],
-        generation=True,
-        evaluation_splits=["test"],
-        hf_avail_splits=["test"],
-    ),
-    # ArmenianEvalTask("alpaca_simple", "alpaca-no-context-instr-following", prompt_alpaca, [Metrics.bleu], generation=True),
-    # ArmenianEvalTask("databricks_simple", "databricks-no-context-instr-following", prompt_databricks, [Metrics.bleu], generation=True),
     # InContext QA
-    # ArmenianEvalTask("alpaca", "alpaca-instr-following", prompt_alpaca, [Metrics.bleu], generation=True),
-    # ArmenianEvalTask("databricks", "databricks-instr-following", prompt_databricks, [Metrics.bleu], generation=True),
     ArmenianEvalTask(
         "ms_marco",
         "ms-marco-in-context-qa",
@@ -1098,7 +836,12 @@ TASKS_TABLE = [
     ArmenianEvalTask(
         "include", "include-mcqa", prompt_include, [Metrics.loglikelihood_acc]
     ),
-    # ArmenianEvalTask("hartak", "public-services-mcqa", prompt_hartak_mcqa, [Metrics.loglikelihood_acc]),
+    ArmenianEvalTask(
+        "hartak",
+        "public-services-mcqa",
+        prompt_hartak_mcqa,
+        [Metrics.loglikelihood_acc],
+    ),
     # Summ/Paraphrase/Translation
     ArmenianEvalTask(
         "email",
