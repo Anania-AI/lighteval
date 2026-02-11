@@ -754,7 +754,7 @@ class ArmenianEvalTask(LightevalTaskConfig):
         )
 
         super().__init__(
-            name=f"armenian_evals:{short_name}",
+            name=f"armenian:{short_name}",
             prompt_function=prompt_function,
             hf_repo="Metric-AI/HY-benchmark-ds-clean",
             hf_subset=hf_subset,
