@@ -88,6 +88,221 @@ PROMPTS_TEXT_TAGGING = {
 }
 
 
+PROMPTS_MMLU_PRO = {
+    "system": 'The following are multiple choice questions (with answers) about {category}.\nThink step by step and then output the answer in the format of "The answer is (X)" at the end.',
+    "input": "Question: {question}\nChoices:",
+}
+
+
+def prompt_mmlu_pro(line, task_name=None):
+    system_prompt = PROMPTS_MMLU_PRO["system"]
+    input_prompt = PROMPTS_MMLU_PRO["input"]
+
+    system_prompt = system_prompt.format(category=line["category"])
+    formated_input_prompt = input_prompt.format(question=line["question_arm"]) + "\n"
+
+    choice_map = "ABCDEFGHIJ"
+    options = line["options_arm"]
+
+    for i, opt in enumerate(options):
+        formated_input_prompt += "({}) {}\n".format(choice_map[i], opt)
+    formated_input_prompt += "Output: "
+
+    gold_index = line["answer_index"]
+
+    return Doc(
+        task_name=task_name,
+        query=formated_input_prompt,
+        choices=options,
+        gold_index=gold_index,
+        instruction=system_prompt,
+    )
+
+
+PROMPTS_EXAM_HISTORY = {
+    1: {
+        "system": """The following is multiple-choice question (with answers). Use the provided context or passage to guide your reasoning if the context exists.
+Think step by step and then output the answer in the format of "The answer is (X)" at the end.""",
+        "input": """Question: {question}
+Context: {context}
+Choices:
+""",
+    },
+    2: {
+        "system": """The following is multiple-answer question (with answers). Each question may have a different number of correct choices. Use the provided context or passage to guide your reasoning if the context exists.
+Think step by step and then output the answer in the format of [X, Y, Z, ...] listing all applicable choices.""",
+        "input": """Question: {question}
+Context: {context}
+Possible Choices:""",
+    },
+    3: {
+        "system": """The following is multiple-option question. Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists. 
+Think step by step and then output the answer in the format of ['Ճիշտ է', 'Սխալ է', 'Չգիտեմ', 'Ճիշտ է', 'Սխալ է', 'Ճիշտ է'].""",
+        "input": """Instruction: {question}
+Context: {context}
+Options:""",
+    },
+    4: {
+        "system": """You are presented with a matching task. Match each item from Character Items to its corresponding item from Numeric Items. Character Items are: (Ա, Բ, Գ, ...). Numeric Items are: (1, 2, 3, ...). 
+Think step by step, considering each item and its possible matches.
+Return your answer as a set of key-value pairs where the keys are the items from Character Items and the values are the corresponding items from Numeric Items.
+Ensure that the output includes only the items listed in Character Items and that the number of keys in your output matches the number of items in Character Items. For example, if Character Items are (Ա, Բ, Գ), and Numeric Items are (1, 2, 3, 4, 5) the output should be {"Ա": 2, "Բ": 1, "Գ": 5}.""",
+        "input": """Instruction: {question}
+Character Items: {context}
+Numeric Items:""",
+    },
+    5: {
+        "system": """Arrange the following events in the modern history of Armenia in strict chronological order, from the earliest to the most recent. Provide the sequence of numbers corresponding to the events. Ensure the returned sequence has the same length as the number of events listed.
+Think step by step and return the answer in the following format, where the sequence of numbers is presented as a list of strings e.g. ['5', '3', '1', '2', '4']""",
+        "input": """Instruction: {question}
+Context: {context}
+Events:""",
+    },
+}
+
+
+def prompt_exam_history(line, task_name=None):
+    system_prompt = PROMPTS_EXAM_HISTORY[line["task_type"]]["system"]
+    input_prompt = PROMPTS_EXAM_HISTORY[line["task_type"]]["input"]
+
+    if not line["context"]:
+        formatted_input_prompt = input_prompt.format(
+            question=line["question"], context=""
+        )
+        formatted_input_prompt = formatted_input_prompt.replace("\nContext: ", "")
+    else:
+        formatted_input_prompt = input_prompt.format(
+            question=line["question"], context=line["context"]
+        )
+
+    choice_map = "123456789"
+    for i in range(len(line["choices"])):
+        formatted_input_prompt += "{}. {}\n".format(choice_map[i], line["choices"][i])
+
+    formatted_input_prompt += "Output: "
+
+    gold_index = choice_map.index(line["label"][0])
+    options = line["choices"]
+
+    return Doc(
+        task_name=task_name,
+        query=formatted_input_prompt,
+        choices=options,
+        gold_index=gold_index,
+        instruction=system_prompt,
+    )
+
+
+PROMPTS_EXAM_MATH = {
+    1: {
+        "system": """The following is a multiple-choice question (MCQ) with answer choices.
+You will be given a mathematical task followed by a question based on that task. Your goal is to read the task carefully, understand the question, and select the correct answer choice from the given options.
+Think step by step and provide the correct answer choice in the following format: "The answer is (X)\"""",
+        "input": """Task: {task}
+Question: {question}
+Choices:""",
+    },
+    2: {
+        "system": """You will be given initial parameters, data, or conditions, followed by a question that requires solving a problem based on them.
+Think step by step and then output the answer in the format of "The answer is (X)" at the end.""",
+        "input": """Given conditions: {task}
+Question: {question}""",
+    },
+    3: {
+        "system": """You will be given a task with initial conditions, followed by question and multiple-options. Each task has exactly 6 options. For each option, decide whether it is {ճիշտ է, սխալ է, Չգիտեմ}.
+
+Think step by step and then output the answer in the format of:
+['ճիշտ է', 'սխալ է', 'Չգիտեմ', 'ճիշտ է', 'սխալ է', 'ճիշտ է']""",
+        "input": """Given conditions: {task}
+Question: {question}
+Options:""",
+    },
+}
+
+
+def prompt_exam_math(line, task_name=None):
+    system_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["system"]
+    input_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["input"]
+
+    formatted_input_prompt = input_prompt.format(
+        task=line["task"], question=line["question"]
+    )
+    choice_map = "ABCDEFGHIJ"
+    if line["task_type"] != 7:
+        for i in range(len(line["choices"])):
+            formatted_input_prompt += "{}. {}\n".format(
+                choice_map[i], line["choices"][i]
+            )
+
+    formatted_input_prompt += "Output: "
+    gold_index = choice_map.index(line["label"][0])
+    options = line["choices"]
+
+    return Doc(
+        task_name=task_name,
+        query=formatted_input_prompt,
+        choices=options,
+        gold_index=gold_index,
+        instruction=system_prompt,
+    )
+
+
+PROMPTS_EXAM_LITERATURE = {
+    1: {
+        "system": """The following are multiple-choice questions (with answers). Use the provided context or passage to guide your reasoning if the context exists.
+Think step by step and then output the answer in the format of "The answer is (X)" at the end.""",
+        "input": """Question: {question}
+Context: {context}
+Choices:""",
+    },
+    2: {
+        "system": """The following are multiple-answer questions (with answers). Each question may have a different number of correct choices. Use the provided context or passage to guide your reasoning if the context exists.
+Think step by step and then output the answer in the format of [X, Y, Z, ...] listing all applicable choices.""",
+        "input": """Question: {question}
+Context: {context}
+Possible Choices:""",
+    },
+    3: {
+        "system": """The following are multiple-option questions (with answers). Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists. 
+Think step by step and then output the answer in the format of ['Ճիշտ է', 'Սխալ է', 'Չգիտեմ', 'Ճիշտ է', 'Սխալ է', 'Ճիշտ է'].""",
+        "input": """Instruction: {question}
+Context: {context}
+Options:""",
+    },
+}
+
+
+def prompt_exam_literature(line, task_name=None):
+    system_prompt = PROMPTS_EXAM_LITERATURE[line["task_type"]]["system"]
+    input_prompt = PROMPTS_EXAM_LITERATURE[line["task_type"]]["input"]
+
+    if not line["context"]:
+        formatted_input_prompt = input_prompt.format(
+            question=line["question"], context=""
+        )
+        formatted_input_prompt = formatted_input_prompt.replace("\nContext: ", "")
+    else:
+        formatted_input_prompt = input_prompt.format(
+            question=line["question"], context=line["context"]
+        )
+
+    choice_map = "123456789"
+    for i in range(len(line["choices"])):
+        formatted_input_prompt += "{}. {}\n".format(choice_map[i], line["choices"][i])
+
+    formatted_input_prompt += "Output: "
+    gold_index = choice_map.index(line["label"][0])
+    options = line["choices"]
+
+    return Doc(
+        task_name=task_name,
+        query=formatted_input_prompt,
+        choices=options,
+        gold_index=gold_index,
+        instruction=system_prompt,
+    )
+
+
 def prompt_sib200(line, task_name=None):
     eng_label = line["category"]
     gold = SIB200_LABEL_MAP[eng_label]
@@ -870,5 +1085,29 @@ TASKS_TABLE = [
         prompt_translation,
         [Metrics.bleu, Metrics.bert_score_arm],
         generation=True,
+    ),
+    ArmenianEvalTask(
+        "mmlu_pro",
+        "mmlu_pro",
+        prompt_mmlu_pro,
+        [Metrics.loglikelihood_acc],
+    ),
+    ArmenianEvalTask(
+        "exam_history",
+        "exam_history",
+        prompt_exam_history,
+        [Metrics.loglikelihood_acc],
+    ),
+    ArmenianEvalTask(
+        "exam_literature",
+        "exam_literature",
+        prompt_exam_literature,
+        [Metrics.loglikelihood_acc],
+    ),
+    ArmenianEvalTask(
+        "exam_math",
+        "exam_math",
+        prompt_exam_math,
+        [Metrics.loglikelihood_acc],
     ),
 ]
