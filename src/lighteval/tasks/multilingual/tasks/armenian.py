@@ -182,9 +182,6 @@ def prompt_exam_history(line, task_name=None):
 
     formatted_input_prompt += "Output: "
 
-    # gold_index = choice_map.index(line["label"][0])
-    options = line["choices"]
-
     return Doc(
         task_name=task_name,
         query=formatted_input_prompt,
@@ -239,15 +236,14 @@ def prompt_exam_math(line, task_name=None):
             )
 
     formatted_input_prompt += "Output: "
-    gold_index = choice_map.index(line["label"][0])
-    options = line["choices"]
 
     return Doc(
         task_name=task_name,
         query=formatted_input_prompt,
-        choices=options,
-        gold_index=gold_index,
+        choices=line["choices"],
+        gold_index=0,
         instruction=system_prompt,
+        specific={"task_type": line["task_type"], "label": line["label"]}
     )
 
 
@@ -295,15 +291,14 @@ def prompt_exam_literature(line, task_name=None):
         formatted_input_prompt += "{}. {}\n".format(choice_map[i], line["choices"][i])
 
     formatted_input_prompt += "Output: "
-    gold_index = choice_map.index(line["label"][0])
-    options = line["choices"]
 
     return Doc(
         task_name=task_name,
         query=formatted_input_prompt,
-        choices=options,
-        gold_index=gold_index,
+        choices=line["choices"],
+        gold_index=0,
         instruction=system_prompt,
+        specific={"task_type": line["task_type"], "label": line["label"]}
     )
 
 
@@ -1011,7 +1006,7 @@ TASKS_TABLE = [
         generation=True,
     ),
     # NER / POS
-    ArmenianEvalTask("finer", "finer", prompt_finer, [ner_span_metric]),
+    ArmenianEvalTask("finer", "finer", prompt_finer, [ner_span_metric], generation=True),
     ArmenianEvalTask(
         "pioner", "pioner", prompt_pioner, [ner_span_metric], generation=True
     ),
@@ -1107,12 +1102,14 @@ TASKS_TABLE = [
         "exam_literature",
         "exam_literature",
         prompt_exam_literature,
-        [Metrics.loglikelihood_acc],
+        [armenian_exam_metric],
+        generation=True,
     ),
     ArmenianEvalTask(
         "exam_math",
         "exam_math",
         prompt_exam_math,
-        [Metrics.loglikelihood_acc],
+        [armenian_exam_metric],
+        generation=True,
     ),
 ]

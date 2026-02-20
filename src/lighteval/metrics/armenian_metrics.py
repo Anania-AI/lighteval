@@ -227,74 +227,75 @@ class BertScoreArm(SampleLevelComputation):
         P, R, F = self.scorer.score([pred], [golds])
         return F[0].item()
 
+class ArmenianExamComputation(SampleLevelComputation):
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
 
-def evaluate_armenian_exam_sample(predictions, formatted_doc, **kwargs):
-    task_type = formatted_doc.specific.get("task_type")
-    true_answer = formatted_doc.specific.get("label")
-    text = predictions[0]
-    score = 0.0
+        task_type = doc.specific.get("task_type")
+        true_answer = doc.specific.get("label")
+        text = model_response.final_text[0]
+        score = 0.0
 
-    if task_type == 1:
-        extracted_answer = extract_answer_for_numeric_choices(text)
-        if extracted_answer is None:
-            extracted_answer = extract_again_for_numeric_choices(text)
-        if extracted_answer is None:
-            extracted_answer = extract_final_for_numeric_choices(text)
-            
-        if extracted_answer is not None and extracted_answer == true_answer[0]:
-            score = 0.25
+        if task_type == 1:
+            extracted_answer = extract_answer_for_numeric_choices(text)
+            if extracted_answer is None:
+                extracted_answer = extract_again_for_numeric_choices(text)
+            if extracted_answer is None:
+                extracted_answer = extract_final_for_numeric_choices(text)
+                
+            if extracted_answer is not None and extracted_answer == true_answer[0]:
+                score = 0.25
 
-    elif task_type == 2:
-        extracted_answer = extract_correct_answers_list(text)
-        extracted_answer = [str(i) for i in extracted_answer]
-        if extracted_answer is not None and set(true_answer) == set(extracted_answer):
-            score = 0.25
+        elif task_type == 2:
+            extracted_answer = extract_correct_answers_list(text)
+            extracted_answer = [str(i) for i in extracted_answer]
+            if extracted_answer is not None and set(true_answer) == set(extracted_answer):
+                score = 0.25
 
-    elif task_type == 3:
-        extracted_answer = extract_correct_answers_list(text)
-        chsy_score = 0
-        for a, b in zip(extracted_answer, true_answer):
-            if a == b:
-                chsy_score += 0.25
-            elif a != b and a != 'Չգիտեմ':
-                chsy_score -= 0.25
-        if chsy_score < 0:
+        elif task_type == 3:
+            extracted_answer = extract_correct_answers_list(text)
             chsy_score = 0
-        score = chsy_score
+            for a, b in zip(extracted_answer, true_answer):
+                if a == b:
+                    chsy_score += 0.25
+                elif a != b and a != 'Չգիտեմ':
+                    chsy_score -= 0.25
+            if chsy_score < 0:
+                chsy_score = 0
+            score = chsy_score
 
-    elif task_type == 4:
-        extracted_answer = extract_correct_answers_dict(text)
-        extracted_answer = [str(i) for i in extracted_answer]
-        if extracted_answer == true_answer:
-            score = 0.25
+        elif task_type == 4:
+            extracted_answer = extract_correct_answers_dict(text)
+            extracted_answer = [str(i) for i in extracted_answer]
+            if extracted_answer == true_answer:
+                score = 0.25
 
-    elif task_type == 5:
-        extracted_answer = extract_correct_answers_list(text)
-        extracted_answer = [str(i) for i in extracted_answer]
-        if extracted_answer == true_answer:
-            score = 0.25
+        elif task_type == 5:
+            extracted_answer = extract_correct_answers_list(text)
+            extracted_answer = [str(i) for i in extracted_answer]
+            if extracted_answer == true_answer:
+                score = 0.25
 
-    elif task_type == 6:
-        extracted_answer = extract_answer_for_letter_choices(text)
-        if extracted_answer is None:
-            extracted_answer = extract_again_for_letter_choices(text)
-        if extracted_answer is None:
-            extracted_answer = extract_final_for_letter_choices(text)
-            
-        if extracted_answer is not None and extracted_answer == true_answer[0]:
-            score = 0.25
+        elif task_type == 6:
+            extracted_answer = extract_answer_for_letter_choices(text)
+            if extracted_answer is None:
+                extracted_answer = extract_again_for_letter_choices(text)
+            if extracted_answer is None:
+                extracted_answer = extract_final_for_letter_choices(text)
+                
+            if extracted_answer is not None and extracted_answer == true_answer[0]:
+                score = 0.25
 
-    elif task_type == 7:
-        extracted_answer = extract_answer_for_numeric_answer(text)
-        if extracted_answer is None:
-            extracted_answer = extract_again_for_numeric_answer(text)
-        if extracted_answer is None:
-            extracted_answer = extract_final_for_numeric_answer(text)
-            
-        if extracted_answer is not None and extracted_answer == true_answer[0]:
-            score = 0.25
+        elif task_type == 7:
+            extracted_answer = extract_answer_for_numeric_answer(text)
+            if extracted_answer is None:
+                extracted_answer = extract_again_for_numeric_answer(text)
+            if extracted_answer is None:
+                extracted_answer = extract_final_for_numeric_answer(text)
+                
+            if extracted_answer is not None and extracted_answer == true_answer[0]:
+                score = 0.25
 
-    return {"custom_exam_score": score}
+        return score
 
 ner_span_metric = SampleLevelMetric(
     metric_name="ner_accuracy",
@@ -320,7 +321,7 @@ bert_score_arm = SampleLevelMetric(
 armenian_exam_metric = SampleLevelMetric(
     metric_name="armenian_exam_score",
     category=SamplingMethod.GENERATIVE,
-    sample_level_fn=evaluate_armenian_exam_sample,
+    sample_level_fn=ArmenianExamComputation(),
     corpus_level_fn=np.mean,
     higher_is_better=True,
 )
