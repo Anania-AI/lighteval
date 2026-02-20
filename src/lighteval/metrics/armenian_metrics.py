@@ -1,8 +1,11 @@
+from lighteval.metrics.utils.armenian_eval_utils import extract_answer_for_numeric_choices, extract_again_for_numeric_choices, extract_final_for_numeric_choices, extract_answer_for_numeric_answer, extract_again_for_numeric_answer, extract_final_for_numeric_answer, extract_answer_for_letter_choices, extract_again_for_letter_choices, extract_final_for_letter_choices, extract_correct_answers_list, extract_correct_answers_dict
 from aenum import extend_enum
+import pandas as pd
 import numpy as np
 import torch
 import json
 import re
+import os
 
 from lighteval.metrics.metrics import Metrics
 from lighteval.metrics.utils.metric_utils import (
@@ -46,12 +49,13 @@ class NERSpanComputation(SampleLevelComputation):
                         correct += 1
                         break
 
-        return {
-            "correct": correct,
-            "gold": len(gold_entities),
-            "pred": len(pred_entities),
-            "accuracy": correct / len(gold_entities) if gold_entities else 0.0,
-        }
+        return correct / len(gold_entities) if gold_entities else 0.0
+        # return {
+        #     "correct": correct,
+        #     "gold": len(gold_entities),
+        #     "pred": len(pred_entities),
+        #     "accuracy": correct / len(gold_entities) if gold_entities else 0.0,
+        # }
 
     def parse_pred(self, pred: str):
         pred = pred.strip()
@@ -224,6 +228,74 @@ class BertScoreArm(SampleLevelComputation):
         return F[0].item()
 
 
+def evaluate_armenian_exam_sample(predictions, formatted_doc, **kwargs):
+    task_type = formatted_doc.specific.get("task_type")
+    true_answer = formatted_doc.specific.get("label")
+    text = predictions[0]
+    score = 0.0
+
+    if task_type == 1:
+        extracted_answer = extract_answer_for_numeric_choices(text)
+        if extracted_answer is None:
+            extracted_answer = extract_again_for_numeric_choices(text)
+        if extracted_answer is None:
+            extracted_answer = extract_final_for_numeric_choices(text)
+            
+        if extracted_answer is not None and extracted_answer == true_answer[0]:
+            score = 0.25
+
+    elif task_type == 2:
+        extracted_answer = extract_correct_answers_list(text)
+        extracted_answer = [str(i) for i in extracted_answer]
+        if extracted_answer is not None and set(true_answer) == set(extracted_answer):
+            score = 0.25
+
+    elif task_type == 3:
+        extracted_answer = extract_correct_answers_list(text)
+        chsy_score = 0
+        for a, b in zip(extracted_answer, true_answer):
+            if a == b:
+                chsy_score += 0.25
+            elif a != b and a != 'Չգիտեմ':
+                chsy_score -= 0.25
+        if chsy_score < 0:
+            chsy_score = 0
+        score = chsy_score
+
+    elif task_type == 4:
+        extracted_answer = extract_correct_answers_dict(text)
+        extracted_answer = [str(i) for i in extracted_answer]
+        if extracted_answer == true_answer:
+            score = 0.25
+
+    elif task_type == 5:
+        extracted_answer = extract_correct_answers_list(text)
+        extracted_answer = [str(i) for i in extracted_answer]
+        if extracted_answer == true_answer:
+            score = 0.25
+
+    elif task_type == 6:
+        extracted_answer = extract_answer_for_letter_choices(text)
+        if extracted_answer is None:
+            extracted_answer = extract_again_for_letter_choices(text)
+        if extracted_answer is None:
+            extracted_answer = extract_final_for_letter_choices(text)
+            
+        if extracted_answer is not None and extracted_answer == true_answer[0]:
+            score = 0.25
+
+    elif task_type == 7:
+        extracted_answer = extract_answer_for_numeric_answer(text)
+        if extracted_answer is None:
+            extracted_answer = extract_again_for_numeric_answer(text)
+        if extracted_answer is None:
+            extracted_answer = extract_final_for_numeric_answer(text)
+            
+        if extracted_answer is not None and extracted_answer == true_answer[0]:
+            score = 0.25
+
+    return {"custom_exam_score": score}
+
 ner_span_metric = SampleLevelMetric(
     metric_name="ner_accuracy",
     category=SamplingMethod.GENERATIVE,
@@ -245,8 +317,16 @@ bert_score_arm = SampleLevelMetric(
     corpus_level_fn=np.mean,
     higher_is_better=True,
 )
+armenian_exam_metric = SampleLevelMetric(
+    metric_name="armenian_exam_score",
+    category=SamplingMethod.GENERATIVE,
+    sample_level_fn=evaluate_armenian_exam_sample,
+    corpus_level_fn=np.mean,
+    higher_is_better=True,
+)
 
 
 extend_enum(Metrics, "ner_accuracy", ner_span_metric)
 extend_enum(Metrics, "ud_pos_regex_acc", pos_metric)
 extend_enum(Metrics, "bert_score_arm", bert_score_arm)
+extend_enum(Metrics, "armenian_exam_score", armenian_exam_metric)

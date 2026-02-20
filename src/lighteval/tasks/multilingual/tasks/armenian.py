@@ -12,6 +12,7 @@ from lighteval.metrics.utils.metric_utils import (
 from lighteval.metrics.armenian_metrics import (
     pos_metric,
     ner_span_metric,
+    armenian_exam_metric
 )
 
 prompt_language = "en"
@@ -181,15 +182,16 @@ def prompt_exam_history(line, task_name=None):
 
     formatted_input_prompt += "Output: "
 
-    gold_index = choice_map.index(line["label"][0])
+    # gold_index = choice_map.index(line["label"][0])
     options = line["choices"]
 
     return Doc(
         task_name=task_name,
         query=formatted_input_prompt,
-        choices=options,
-        gold_index=gold_index,
+        choices=line["choices"],
+        gold_index=0,
         instruction=system_prompt,
+        specific={"task_type": line["task_type"], "label": line["label"]}
     )
 
 
@@ -221,6 +223,8 @@ Options:""",
 
 
 def prompt_exam_math(line, task_name=None):
+    if not line["task_type"] in PROMPTS_EXAM_MATH:
+        return None
     system_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["system"]
     input_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["input"]
 
@@ -1096,7 +1100,8 @@ TASKS_TABLE = [
         "exam_history",
         "exam_history",
         prompt_exam_history,
-        [Metrics.loglikelihood_acc],
+        [armenian_exam_metric],
+        generation=True,
     ),
     ArmenianEvalTask(
         "exam_literature",
