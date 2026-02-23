@@ -297,6 +297,29 @@ class ArmenianExamComputation(SampleLevelComputation):
 
         return score
 
+class MMLUProComputation(SampleLevelComputation):
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
+        true_answer = doc.specific.get("answer")
+        
+        if true_answer is None:
+            true_answer = "ABCDEFGHIJ"[doc.gold_index]
+
+        text = model_response.final_text[0]
+        
+        extracted_answer = extract_answer_for_letter_choices(text)
+        
+        if extracted_answer is None:
+            extracted_answer = extract_again_for_letter_choices(text)
+            
+        if extracted_answer is None:
+            extracted_answer = extract_final_for_letter_choices(text)
+            
+        if extracted_answer is not None and extracted_answer == true_answer:
+            return 1.0
+            
+        return 0.0
+
+
 ner_span_metric = SampleLevelMetric(
     metric_name="ner_accuracy",
     category=SamplingMethod.GENERATIVE,
@@ -325,9 +348,17 @@ armenian_exam_metric = SampleLevelMetric(
     corpus_level_fn=np.mean,
     higher_is_better=True,
 )
+armenian_mmlu_pro_metric = SampleLevelMetric(
+    metric_name="armenian_mmlu_pro_score",
+    category=SamplingMethod.GENERATIVE,
+    sample_level_fn=MMLUProComputation(),
+    corpus_level_fn=np.mean,
+    higher_is_better=True,
+)
 
 
 extend_enum(Metrics, "ner_accuracy", ner_span_metric)
 extend_enum(Metrics, "ud_pos_regex_acc", pos_metric)
 extend_enum(Metrics, "bert_score_arm", bert_score_arm)
 extend_enum(Metrics, "armenian_exam_score", armenian_exam_metric)
+extend_enum(Metrics, "armenian_mmlu_pro_score", armenian_mmlu_pro_metric)

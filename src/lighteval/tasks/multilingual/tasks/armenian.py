@@ -15,7 +15,7 @@ from lighteval.metrics.armenian_metrics import (
     armenian_exam_metric
 )
 
-prompt_language = "en"
+prompt_language = "hy"
 SIB200_LABEL_MAP = {
     "technology": "տեխնոլոգիա",
     "travel": "ճանապարհորդություն",
@@ -114,9 +114,12 @@ def prompt_mmlu_pro(line, task_name=None):
     return Doc(
         task_name=task_name,
         query=formated_input_prompt,
+        instruction=system_prompt,
         choices=options,
         gold_index=gold_index,
-        instruction=system_prompt,
+        specific={
+            "answer": line["answer"] 
+        }
     )
 
 
@@ -1089,7 +1092,8 @@ TASKS_TABLE = [
         "mmlu_pro",
         "mmlu_pro",
         prompt_mmlu_pro,
-        [Metrics.loglikelihood_acc],
+        [Metrics.loglikelihood_acc, Metrics.armenian_mmlu_pro_score],
+        generation=True,
     ),
     ArmenianEvalTask(
         "exam_history",
