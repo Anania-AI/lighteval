@@ -320,6 +320,34 @@ class MMLUProComputation(SampleLevelComputation):
         return 0.0
 
 
+class GeneralizedExactMatch(SampleLevelComputation):
+    def __init__(self, extractors: list, choice_map: str = None):
+        self.extractors = extractors
+        self.choice_map = choice_map
+
+    def compute(self, doc, model_response, **kwargs):
+        true_answer = doc.specific.get("answer")
+        
+        if true_answer is None and self.choice_map is not None:
+            true_answer = self.choice_map[doc.gold_index]
+            
+        if true_answer is None:
+            return 0.0 
+
+        text = model_response.final_text[0]
+        extracted_answer = None
+
+        for extractor_fn in self.extractors:
+            extracted_answer = extractor_fn(text)
+            if extracted_answer is not None:
+                break
+                
+        if extracted_answer is not None and str(extracted_answer).strip() == str(true_answer).strip():
+            return 1.0
+            
+        return 0.0
+
+
 ner_span_metric = SampleLevelMetric(
     metric_name="ner_accuracy",
     category=SamplingMethod.GENERATIVE,
@@ -355,10 +383,23 @@ armenian_mmlu_pro_metric = SampleLevelMetric(
     corpus_level_fn=np.mean,
     higher_is_better=True,
 )
-
+armenian_mcqa_metric = SampleLevelMetric(
+    metric_name="exact_match_mcqa",
+    higher_is_better=True,
+    category=SamplingMethod.GENERATIVE,
+    sample_level_fn=GeneralizedExactMatch(
+        extractors=[
+            extract_answer_for_letter_choices,
+            extract_again_for_letter_choices,
+            extract_final_for_letter_choices
+        ]
+    ),
+    corpus_level_fn=np.mean
+)
 
 extend_enum(Metrics, "ner_accuracy", ner_span_metric)
 extend_enum(Metrics, "ud_pos_regex_acc", pos_metric)
 extend_enum(Metrics, "bert_score_arm", bert_score_arm)
 extend_enum(Metrics, "armenian_exam_score", armenian_exam_metric)
 extend_enum(Metrics, "armenian_mmlu_pro_score", armenian_mmlu_pro_metric)
+extend_enum(Metrics, "exact_match_mcqa", armenian_mcqa_metric)

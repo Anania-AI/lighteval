@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=test_mmlu_pro_exact_match
+#SBATCH --job-name=qwen-3-4b-it_eval
 #SBATCH --account=project_465002461   # Your specific LUMI project billing account
 #SBATCH --partition=standard-g        # The LUMI partition for standard GPU jobs
 #SBATCH --nodes=1                  # <--- Request 2 nodes
@@ -32,16 +32,15 @@ export SINGULARITYENV_PYTHONPATH=$VIRTUAL_ENV/lib/python3.12/site-packages:$PYTH
 export SINGULARITYENV_MIOPEN_USER_DB_PATH="/tmp/miopen_db_$SLURM_JOB_ID_$SLURM_PROCID"
 export SINGULARITYENV_MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen_cache_$SLURM_JOB_ID_$SLURM_PROCID"
 
-# ALL_TASKS="armenian:mmlu_pro|0,armenian:exam_math|0,armenian:exam_history|0,armenian:exam_literature|0,armenian:topic-14class|0,armenian:sentiment|0,armenian:space_fix|0,armenian:punctuation|0,armenian:finer|0,armenian:pioner|0,armenian:pos|0,armenian:arak|0,armenian:ms_marco|0,armenian:squad|0,armenian:belebele|0,armenian:scientific|0,armenian:syndarin|0,armenian:dream|0,armenian:include|0,armenian:hartak|0,armenian:email|0,armenian:conversation|0,armenian:paraphrase|0,armenian:short_sentences_translation|0"
-ALL_TASKS="armenian:mmlu_pro|0"
+ALL_TASKS="armenian:mmlu_pro|0,armenian:exam_math|0,armenian:exam_history|0,armenian:exam_literature|0,armenian:topic-14class|0,armenian:sentiment|0,armenian:space_fix|0,armenian:punctuation|0,armenian:finer|0,armenian:pioner|0,armenian:pos|0,armenian:arak|0,armenian:ms_marco|0,armenian:squad|0,armenian:belebele|0,armenian:scientific|0,armenian:syndarin|0,armenian:dream|0,armenian:include|0,armenian:hartak|0,armenian:email|0,armenian:conversation|0,armenian:paraphrase|0,armenian:short_sentences_translation|0"
+MODEL_NAME="Qwen/Qwen3-4B-Instruct-2507"
 
 srun --cpu-bind=none \
     ../new_container_exec_torch_2.7.1.sh \
     ../new_setup_env_lighteval.sh lighteval \
     lighteval vllm \
-    "model_name=Anania-AI/Qwen3-4B-IT-SFT-packing-2ep,dtype=bfloat16,max_model_length=4096" \
+    "model_name=$MODEL_NAME,dtype=bfloat16,max_model_length=4096" \
     "$ALL_TASKS" \
-    --custom-tasks src/lighteval/tasks/multilingual/tasks/armenian.py
-
-
+    --custom-tasks src/lighteval/tasks/multilingual/tasks/armenian.py \
+    --output-dir "evaluations/$MODEL_NAME"
 

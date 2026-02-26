@@ -12,7 +12,8 @@ from lighteval.metrics.utils.metric_utils import (
 from lighteval.metrics.armenian_metrics import (
     pos_metric,
     ner_span_metric,
-    armenian_exam_metric
+    armenian_exam_metric,
+    armenian_mcqa_metric
 )
 
 prompt_language = "hy"
@@ -308,27 +309,47 @@ def prompt_exam_literature(line, task_name=None):
 def prompt_sib200(line, task_name=None):
     eng_label = line["category"]
     gold = SIB200_LABEL_MAP[eng_label]
+    choices = SIB200_LABELS
+    gold_index = choices.index(gold)
+
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    formatted_labels = "\n".join([f"({choice_map[i]}) {opt}" for i, opt in enumerate(choices)])
+    
     query = PROMPTS_SIB200["query"][prompt_language].format(
-        labels=", ".join(SIB200_LABELS), text=line["text"]
+        labels=formatted_labels, text=line["text"]
     )
+    instruction = PROMPTS_SIB200["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
-        choices=SIB200_LABELS,
-        gold_index=SIB200_LABELS.index(gold),
-        instruction=PROMPTS_SIB200["instruction"][prompt_language],
+        choices=choices,
+        gold_index=gold_index,
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
 def prompt_sentiment(line, task_name=None):
     gold = line["sentiment_categories"][0]
-    query = PROMPTS_SENTIMENT["query"][prompt_language].format(text=line["text"])
+    choices = SENTIMENT_LABELS
+    gold_index = choices.index(gold) if gold in choices else 0
+
+    text = line["text"]
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i, opt in enumerate(choices):
+        text += f"\n({choice_map[i]}) {opt}"
+
+    query = PROMPTS_SENTIMENT["query"][prompt_language].format(text=text)
+    instruction = PROMPTS_SENTIMENT["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
-        choices=SENTIMENT_LABELS,
-        gold_index=SENTIMENT_LABELS.index(gold) if gold in SENTIMENT_LABELS else 0,
-        instruction=PROMPTS_SENTIMENT["instruction"][prompt_language],
+        choices=choices,
+        gold_index=gold_index,
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -454,15 +475,23 @@ def prompt_belebele(line, task_name=None):
         line["mc_answer4"],
     ]
     gold_index = line["correct_answer_num"] - 1
+
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i, opt in enumerate(choices):
+        question += f"\n({choice_map[i]}) {opt}"
+
     query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
         context=passage, question=question
     )
+    instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
         choices=choices,
         gold_index=gold_index,
-        instruction=PROMPTS_CONTEXT_MCQA["instruction"][prompt_language],
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -472,15 +501,22 @@ def prompt_scientific(line, task_name=None):
     choices = line["choices"]
     gold_index = line["gold_index"]
 
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i, opt in enumerate(choices):
+        question += f"\n({choice_map[i]}) {opt}"
+
     query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
         context=context, question=question
     )
+    instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
         choices=choices,
         gold_index=gold_index,
-        instruction=PROMPTS_CONTEXT_MCQA["instruction"][prompt_language],
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -494,15 +530,23 @@ def prompt_syndarin(line, task_name=None):
         line["answer_candidate_4"],
     ]
     gold_index = choices.index(line["correct_answer"])
+
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i, opt in enumerate(choices):
+        question += f"\n({choice_map[i]}) {opt}"
+
     query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
         context=context, question=question
     )
+    instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
         choices=choices,
         gold_index=gold_index,
-        instruction=PROMPTS_CONTEXT_MCQA["instruction"][prompt_language],
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -515,15 +559,22 @@ def prompt_dream(line, task_name=None):
     choices = line["choices"]
     gold_index = line["label"]
 
+    choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i, opt in enumerate(choices):
+        question += f"\n({choice_map[i]}) {opt}"
+
     query = PROMPTS_DREAM["query"][prompt_language].format(
         dialogue=dialogue, question=question
     )
+    instruction = PROMPTS_DREAM["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
         choices=choices,
         gold_index=gold_index,
-        instruction=PROMPTS_DREAM["instruction"][prompt_language],
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -540,26 +591,49 @@ PROMPTS_MCQA = {
 
 
 def prompt_hartak_mcqa(line, task_name=None):
-    choices = [line["answer"]] + line["distractors"]
+    choices_text = [line["answer"]] + line["distractors"]
     query = PROMPTS_MCQA["query"][prompt_language].format(question=line["question"])
+
+    choice_map = "ABCD"
+    for i, opt in enumerate(choices_text):
+        query += f"\n({choice_map[i]}) {opt}"
+        
+    query += "\n" 
+    
+    gold_index = 0
+    choices=[f" {c}" for c in choices_text]
+    instruction = PROMPTS_MCQA["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
-        choices=[f" {c}" for c in choices],
-        gold_index=0,
-        instruction=PROMPTS_MCQA["instruction"][prompt_language],
+        choices=choices,
+        gold_index=gold_index,
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
-
 def prompt_include(line, task_name=None):
-    choices = [line["option_a"], line["option_b"], line["option_c"], line["option_d"]]
+    choices_text = [line["option_a"], line["option_b"], line["option_c"], line["option_d"]]
     query = PROMPTS_MCQA["query"][prompt_language].format(question=line["question"])
+    
+    choice_map = "ABCD"
+    for i, opt in enumerate(choices_text):
+        query += f"\n({choice_map[i]}) {opt}"
+        
+    query += "\n" 
+    
+    gold_index = line["answer"]
+    choices=[f" {c}" for c in choices_text]
+    instruction = PROMPTS_MCQA["instruction"][prompt_language]
+
     return Doc(
         task_name=task_name,
         query=query,
-        choices=[f" {c}" for c in choices],
-        gold_index=line["answer"],
-        instruction=PROMPTS_MCQA["instruction"][prompt_language],
+        choices=choices,
+        gold_index=gold_index,
+        instruction=instruction,
+        specific={"answer": choice_map[gold_index]}
     )
 
 
@@ -988,10 +1062,12 @@ class ArmenianEvalTask(LightevalTaskConfig):
 TASKS_TABLE = [
     # Classification
     ArmenianEvalTask(
-        "topic-14class", "topic-14class", prompt_sib200, [Metrics.loglikelihood_acc]
+        "topic-14class", "topic-14class", prompt_sib200, [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     ArmenianEvalTask(
-        "sentiment", "sentiment", prompt_sentiment, [Metrics.loglikelihood_acc]
+        "sentiment", "sentiment", prompt_sentiment, [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     # Text editing
     ArmenianEvalTask(
@@ -1032,32 +1108,38 @@ TASKS_TABLE = [
         "belebele",
         "belebele-in-context-mcqa",
         prompt_belebele,
-        [Metrics.loglikelihood_acc],
+        [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     ArmenianEvalTask(
         "scientific",
         "scientific-in-context-mcqa",
         prompt_scientific,
-        [Metrics.loglikelihood_acc],
+        [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     ArmenianEvalTask(
         "syndarin",
         "syndarin-in-context-mcqa",
         prompt_syndarin,
-        [Metrics.loglikelihood_acc],
+        [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     ArmenianEvalTask(
-        "dream", "conversation-in-context-qa", prompt_dream, [Metrics.loglikelihood_acc]
+        "dream", "conversation-in-context-qa", prompt_dream, [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     # MCQA
     ArmenianEvalTask(
-        "include", "include-mcqa", prompt_include, [Metrics.loglikelihood_acc]
+        "include", "include-mcqa", prompt_include, [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     ArmenianEvalTask(
         "hartak",
         "public-services-mcqa",
         prompt_hartak_mcqa,
-        [Metrics.loglikelihood_acc],
+        [Metrics.loglikelihood_acc, armenian_mcqa_metric],
+        generation=True
     ),
     # Summ/Paraphrase/Translation
     ArmenianEvalTask(
