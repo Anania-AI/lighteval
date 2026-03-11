@@ -30,8 +30,8 @@ export SINGULARITYENV_MIOPEN_CUSTOM_CACHE_DIR="/tmp/miopen_cache_$SLURM_JOB_ID_$
 ALL_TASKS="armenian:mmlu_pro|0"
 MODEL_NAME="openrouter/google/gemini-3-pro-preview"
 
-export OPENROUTER_API_KEY=""
-export SINGULARITYENV_OPENROUTER_API_KEY=""
+export OPENROUTER_API_KEY="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"
+export SINGULARITYENV_OPENROUTER_API_KEY="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"
 
 export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
 export SINGULARITYENV_OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"

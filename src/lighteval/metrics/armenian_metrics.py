@@ -1,4 +1,16 @@
-from lighteval.metrics.utils.armenian_eval_utils import extract_answer_for_numeric_choices, extract_again_for_numeric_choices, extract_final_for_numeric_choices, extract_answer_for_numeric_answer, extract_again_for_numeric_answer, extract_final_for_numeric_answer, extract_answer_for_letter_choices, extract_again_for_letter_choices, extract_final_for_letter_choices, extract_correct_answers_list, extract_correct_answers_dict
+from lighteval.metrics.utils.armenian_eval_utils import (
+    extract_answer_for_numeric_choices,
+    extract_again_for_numeric_choices,
+    extract_final_for_numeric_choices,
+    extract_answer_for_numeric_answer,
+    extract_again_for_numeric_answer,
+    extract_final_for_numeric_answer,
+    extract_answer_for_letter_choices,
+    extract_again_for_letter_choices,
+    extract_final_for_letter_choices,
+    extract_correct_answers_list,
+    extract_correct_answers_dict,
+)
 from aenum import extend_enum
 import pandas as pd
 import numpy as np
@@ -227,6 +239,7 @@ class BertScoreArm(SampleLevelComputation):
         P, R, F = self.scorer.score([pred], [golds])
         return F[0].item()
 
+
 class ArmenianExamComputation(SampleLevelComputation):
     def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
 
@@ -241,14 +254,16 @@ class ArmenianExamComputation(SampleLevelComputation):
                 extracted_answer = extract_again_for_numeric_choices(text)
             if extracted_answer is None:
                 extracted_answer = extract_final_for_numeric_choices(text)
-                
+
             if extracted_answer is not None and extracted_answer == true_answer[0]:
                 score = 0.25
 
         elif task_type == 2:
             extracted_answer = extract_correct_answers_list(text)
             extracted_answer = [str(i) for i in extracted_answer]
-            if extracted_answer is not None and set(true_answer) == set(extracted_answer):
+            if extracted_answer is not None and set(true_answer) == set(
+                extracted_answer
+            ):
                 score = 0.25
 
         elif task_type == 3:
@@ -257,7 +272,7 @@ class ArmenianExamComputation(SampleLevelComputation):
             for a, b in zip(extracted_answer, true_answer):
                 if a == b:
                     chsy_score += 0.25
-                elif a != b and a != 'Չգիտեմ':
+                elif a != b and a != "Չգիտեմ":
                     chsy_score -= 0.25
             if chsy_score < 0:
                 chsy_score = 0
@@ -281,7 +296,7 @@ class ArmenianExamComputation(SampleLevelComputation):
                 extracted_answer = extract_again_for_letter_choices(text)
             if extracted_answer is None:
                 extracted_answer = extract_final_for_letter_choices(text)
-                
+
             if extracted_answer is not None and extracted_answer == true_answer[0]:
                 score = 0.25
 
@@ -291,32 +306,33 @@ class ArmenianExamComputation(SampleLevelComputation):
                 extracted_answer = extract_again_for_numeric_answer(text)
             if extracted_answer is None:
                 extracted_answer = extract_final_for_numeric_answer(text)
-                
+
             if extracted_answer is not None and extracted_answer == true_answer[0]:
                 score = 0.25
 
         return score
 
+
 class MMLUProComputation(SampleLevelComputation):
     def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         true_answer = doc.specific.get("answer")
-        
+
         if true_answer is None:
             true_answer = "ABCDEFGHIJ"[doc.gold_index]
 
         text = model_response.final_text[0]
-        
+
         extracted_answer = extract_answer_for_letter_choices(text)
-        
+
         if extracted_answer is None:
             extracted_answer = extract_again_for_letter_choices(text)
-            
+
         if extracted_answer is None:
             extracted_answer = extract_final_for_letter_choices(text)
-            
+
         if extracted_answer is not None and extracted_answer == true_answer:
             return 1.0
-            
+
         return 0.0
 
 
@@ -327,12 +343,12 @@ class GeneralizedExactMatch(SampleLevelComputation):
 
     def compute(self, doc, model_response, **kwargs):
         true_answer = doc.specific.get("answer")
-        
+
         if true_answer is None and self.choice_map is not None:
             true_answer = self.choice_map[doc.gold_index]
-            
+
         if true_answer is None:
-            return 0.0 
+            return 0.0
 
         text = model_response.final_text[0]
         extracted_answer = None
@@ -341,10 +357,13 @@ class GeneralizedExactMatch(SampleLevelComputation):
             extracted_answer = extractor_fn(text)
             if extracted_answer is not None:
                 break
-                
-        if extracted_answer is not None and str(extracted_answer).strip() == str(true_answer).strip():
+
+        if (
+            extracted_answer is not None
+            and str(extracted_answer).strip() == str(true_answer).strip()
+        ):
             return 1.0
-            
+
         return 0.0
 
 
@@ -373,7 +392,7 @@ armenian_exam_metric = SampleLevelMetric(
     metric_name="armenian_exam_score",
     category=SamplingMethod.GENERATIVE,
     sample_level_fn=ArmenianExamComputation(),
-    corpus_level_fn=np.mean,
+    corpus_level_fn=np.sum,
     higher_is_better=True,
 )
 armenian_mmlu_pro_metric = SampleLevelMetric(
@@ -391,10 +410,10 @@ armenian_mcqa_metric = SampleLevelMetric(
         extractors=[
             extract_answer_for_letter_choices,
             extract_again_for_letter_choices,
-            extract_final_for_letter_choices
+            extract_final_for_letter_choices,
         ]
     ),
-    corpus_level_fn=np.mean
+    corpus_level_fn=np.mean,
 )
 
 extend_enum(Metrics, "ner_accuracy", ner_span_metric)
