@@ -1042,7 +1042,6 @@ class ArmenianEvalTask(LightevalTaskConfig):
         evaluation_splits=None,
         hf_avail_splits=None,
     ):
-        # Default to ["train"], but allow override for subsets that only have ["test"]
         default_eval_splits = (
             evaluation_splits if evaluation_splits is not None else ["train"]
         )
@@ -1060,18 +1059,16 @@ class ArmenianEvalTask(LightevalTaskConfig):
             evaluation_splits=default_eval_splits,
             few_shots_split=few_shots_split,
             few_shots_select=few_shots_select,
-            generation_size=2048 if generation else -1,  # ✅ unified rule
+            generation_size=2048 if generation else -1,
             stop_sequence=None,
         )
 
 
 TASKS_TABLE = [
-    # Classification
     ArmenianEvalTask(
         "topic-14class",
         "topic-14class",
         prompt_sib200,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
@@ -1079,11 +1076,9 @@ TASKS_TABLE = [
         "sentiment",
         "sentiment",
         prompt_sentiment,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
-    # Text editing
     ArmenianEvalTask(
         "space_fix",
         "space_fix",
@@ -1098,7 +1093,6 @@ TASKS_TABLE = [
         [punctuation_accuracy_metric],
         generation=True,
     ),
-    # NER / POS
     ArmenianEvalTask(
         "finer", "finer", prompt_finer, [ner_span_metric], generation=True
     ),
@@ -1106,9 +1100,7 @@ TASKS_TABLE = [
         "pioner", "pioner", prompt_pioner, [ner_span_metric], generation=True
     ),
     ArmenianEvalTask("pos", "pos", prompt_ud_armtdp, [pos_metric], generation=True),
-    # Simple QA
     ArmenianEvalTask("arak", "simpleqa", prompt_qa, [Metrics.bleu], generation=True),
-    # InContext QA
     ArmenianEvalTask(
         "ms_marco",
         "ms-marco-in-context-qa",
@@ -1119,12 +1111,10 @@ TASKS_TABLE = [
     ArmenianEvalTask(
         "squad", "squad-in-context-qa", prompt_squad, [Metrics.bleu], generation=True
     ),
-    # InContext MCQA
     ArmenianEvalTask(
         "belebele",
         "belebele-in-context-mcqa",
         prompt_belebele,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
@@ -1132,7 +1122,6 @@ TASKS_TABLE = [
         "scientific",
         "scientific-in-context-mcqa",
         prompt_scientific,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
@@ -1140,7 +1129,6 @@ TASKS_TABLE = [
         "syndarin",
         "syndarin-in-context-mcqa",
         prompt_syndarin,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
@@ -1148,16 +1136,13 @@ TASKS_TABLE = [
         "dream",
         "conversation-in-context-qa",
         prompt_dream,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
-    # MCQA
     ArmenianEvalTask(
         "include",
         "include-mcqa",
         prompt_include,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
@@ -1165,11 +1150,9 @@ TASKS_TABLE = [
         "hartak",
         "public-services-mcqa",
         prompt_hartak_mcqa,
-        # [Metrics.loglikelihood_acc, armenian_mcqa_metric],
         [armenian_mcqa_metric],
         generation=True,
     ),
-    # Summ/Paraphrase/Translation
     ArmenianEvalTask(
         "email",
         "email-sum",
@@ -1202,7 +1185,6 @@ TASKS_TABLE = [
         "mmlu_pro",
         "mmlu_pro",
         prompt_mmlu_pro,
-        # [Metrics.loglikelihood_acc, Metrics.armenian_mmlu_pro_score],
         [Metrics.armenian_mmlu_pro_score],
         generation=True,
     ),

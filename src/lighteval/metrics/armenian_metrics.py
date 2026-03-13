@@ -62,12 +62,6 @@ class NERSpanComputation(SampleLevelComputation):
                         break
 
         return correct / len(gold_entities) if gold_entities else 0.0
-        # return {
-        #     "correct": correct,
-        #     "gold": len(gold_entities),
-        #     "pred": len(pred_entities),
-        #     "accuracy": correct / len(gold_entities) if gold_entities else 0.0,
-        # }
 
     def parse_pred(self, pred: str):
         pred = pred.strip()
