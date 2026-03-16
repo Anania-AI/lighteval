@@ -14,6 +14,8 @@ from lighteval.metrics.armenian_metrics import (
     ner_span_metric,
     armenian_exam_metric,
     armenian_mcqa_metric,
+    bert_score_arm,
+    armenian_mmlu_pro_metric,
 )
 
 prompt_language = "hy"
@@ -1157,35 +1159,35 @@ TASKS_TABLE = [
         "email",
         "email-sum",
         prompt_email_sum,
-        [Metrics.bleu, Metrics.bert_score_arm],
+        [Metrics.bleu, bert_score_arm],
         generation=True,
     ),
     ArmenianEvalTask(
         "conversation",
         "conversational-sum",
         prompt_conv_sum,
-        [Metrics.bleu, Metrics.bert_score_arm],
+        [Metrics.bleu, bert_score_arm],
         generation=True,
     ),
     ArmenianEvalTask(
         "paraphrase",
         "paraphrase",
         prompt_paraphrase,
-        [Metrics.bleu, Metrics.bert_score_arm],
+        [Metrics.bleu, bert_score_arm],
         generation=True,
     ),
     ArmenianEvalTask(
         "short_sentences_translation",
         "translation_short_sentences",
         prompt_translation,
-        [Metrics.bleu, Metrics.bert_score_arm],
+        [Metrics.bleu, bert_score_arm],
         generation=True,
     ),
     ArmenianEvalTask(
         "mmlu_pro",
         "mmlu_pro",
         prompt_mmlu_pro,
-        [Metrics.armenian_mmlu_pro_score],
+        [armenian_mmlu_pro_metric],
         generation=True,
     ),
     ArmenianEvalTask(

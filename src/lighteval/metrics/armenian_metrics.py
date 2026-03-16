@@ -409,10 +409,3 @@ armenian_mcqa_metric = SampleLevelMetric(
     ),
     corpus_level_fn=np.mean,
 )
-
-extend_enum(Metrics, "ner_accuracy", ner_span_metric)
-extend_enum(Metrics, "ud_pos_regex_acc", pos_metric)
-extend_enum(Metrics, "bert_score_arm", bert_score_arm)
-extend_enum(Metrics, "armenian_exam_score", armenian_exam_metric)
-extend_enum(Metrics, "armenian_mmlu_pro_score", armenian_mmlu_pro_metric)
-extend_enum(Metrics, "exact_match_mcqa", armenian_mcqa_metric)
