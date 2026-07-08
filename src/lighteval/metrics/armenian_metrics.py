@@ -1,46 +1,59 @@
-from lighteval.metrics.utils.armenian_eval_utils import (
-    extract_answer_for_numeric_choices,
-    extract_again_for_numeric_choices,
-    extract_final_for_numeric_choices,
-    extract_answer_for_numeric_answer,
-    extract_again_for_numeric_answer,
-    extract_final_for_numeric_answer,
-    extract_answer_for_letter_choices,
-    extract_again_for_letter_choices,
-    extract_final_for_letter_choices,
-    extract_correct_answers_list,
-    extract_correct_answers_dict,
-)
-from aenum import extend_enum
-import pandas as pd
-import numpy as np
-import torch
+# MIT License
+
+# Copyright (c) 2024 The HuggingFace Team
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import json
 import re
-import os
 
-from lighteval.metrics.metrics import Metrics
+import numpy as np
+import torch
+
+from lighteval.metrics.imports.bert_scorer import BERTScorer
+from lighteval.metrics.utils.armenian_eval_utils import (
+    extract_again_for_letter_choices,
+    extract_again_for_numeric_answer,
+    extract_again_for_numeric_choices,
+    extract_answer_for_letter_choices,
+    extract_answer_for_numeric_answer,
+    extract_answer_for_numeric_choices,
+    extract_correct_answers_dict,
+    extract_correct_answers_list,
+    extract_final_for_letter_choices,
+    extract_final_for_numeric_answer,
+    extract_final_for_numeric_choices,
+)
 from lighteval.metrics.utils.metric_utils import (
+    SampleLevelComputation,
     SampleLevelMetric,
     SamplingMethod,
-    SampleLevelComputation,
 )
 from lighteval.models.model_output import ModelResponse
 from lighteval.tasks.lighteval_task import Doc
-from lighteval.metrics.imports.bert_scorer import BERTScorer
 
 
 class NERSpanComputation(SampleLevelComputation):
     def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
-        gold_entities = [
-            (t.lower().strip(), ty.lower().strip())
-            for (t, ty) in doc.specific.get("gold_entities", [])
-        ]
+        gold_entities = [(t.lower().strip(), ty.lower().strip()) for (t, ty) in doc.specific.get("gold_entities", [])]
 
-        if (
-            hasattr(model_response, "text_post_processed")
-            and model_response.text_post_processed
-        ):
+        if hasattr(model_response, "text_post_processed") and model_response.text_post_processed:
             pred_text = model_response.text_post_processed[0]
         elif hasattr(model_response, "text") and model_response.text:
             pred_text = model_response.text[0]
@@ -63,7 +76,7 @@ class NERSpanComputation(SampleLevelComputation):
 
         return correct / len(gold_entities) if gold_entities else 0.0
 
-    def parse_pred(self, pred: str):
+    def parse_pred(self, pred: str):  # noqa: C901
         pred = pred.strip()
         if pred.startswith("```"):
             pred = pred.strip("`").lstrip("json").strip()
@@ -94,9 +107,7 @@ class NERSpanComputation(SampleLevelComputation):
                             entity_text = e["entity"].strip()
                             entity_tag = e["tag"].strip()
                             if entity_text and entity_tag:
-                                entities.append(
-                                    (entity_text.lower(), entity_tag.lower())
-                                )
+                                entities.append((entity_text.lower(), entity_tag.lower()))
                     if entities:
                         break
             except (json.JSONDecodeError, KeyError, TypeError):
@@ -111,9 +122,7 @@ class NERSpanComputation(SampleLevelComputation):
                             entity_text = e["entity"].strip()
                             entity_tag = e["tag"].strip()
                             if entity_text and entity_tag:
-                                entities.append(
-                                    (entity_text.lower(), entity_tag.lower())
-                                )
+                                entities.append((entity_text.lower(), entity_tag.lower()))
             except Exception:
                 parts = [p for p in pred.replace(";", ",").split(",") if ":" in p]
                 for part in parts:
@@ -153,10 +162,7 @@ class UDPosComputation(SampleLevelComputation):
             if t is not None and ty is not None
         ]
 
-        if (
-            hasattr(model_response, "text_post_processed")
-            and model_response.text_post_processed
-        ):
+        if hasattr(model_response, "text_post_processed") and model_response.text_post_processed:
             pred_text = model_response.text_post_processed[0]
         elif hasattr(model_response, "text") and model_response.text:
             pred_text = model_response.text[0]
@@ -217,13 +223,8 @@ class BertScoreArm(SampleLevelComputation):
     def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
         pred = (
             model_response.text_post_processed[0]
-            if hasattr(model_response, "text_post_processed")
-            and model_response.text_post_processed
-            else (
-                model_response.text[0]
-                if hasattr(model_response, "text") and model_response.text
-                else ""
-            )
+            if hasattr(model_response, "text_post_processed") and model_response.text_post_processed
+            else (model_response.text[0] if hasattr(model_response, "text") and model_response.text else "")
         ).strip()
 
         golds = doc.choices or []
@@ -235,7 +236,7 @@ class BertScoreArm(SampleLevelComputation):
 
 
 class ArmenianExamComputation(SampleLevelComputation):
-    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):
+    def compute(self, doc: Doc, model_response: ModelResponse, **kwargs):  # noqa: C901
 
         task_type = doc.specific.get("task_type")
         true_answer = doc.specific.get("label")
@@ -255,9 +256,7 @@ class ArmenianExamComputation(SampleLevelComputation):
         elif task_type == 2:
             extracted_answer = extract_correct_answers_list(text)
             extracted_answer = [str(i) for i in extracted_answer]
-            if extracted_answer is not None and set(true_answer) == set(
-                extracted_answer
-            ):
+            if extracted_answer is not None and set(true_answer) == set(extracted_answer):
                 score = 0.25
 
         elif task_type == 3:
@@ -352,10 +351,7 @@ class GeneralizedExactMatch(SampleLevelComputation):
             if extracted_answer is not None:
                 break
 
-        if (
-            extracted_answer is not None
-            and str(extracted_answer).strip() == str(true_answer).strip()
-        ):
+        if extracted_answer is not None and str(extracted_answer).strip() == str(true_answer).strip():
             return 1.0
 
         return 0.0

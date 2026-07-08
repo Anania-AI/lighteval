@@ -1,22 +1,47 @@
-import numpy as np
+# MIT License
+
+# Copyright (c) 2024 The HuggingFace Team
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import json
 import re
-from lighteval.tasks.lighteval_task import LightevalTaskConfig, Doc
-from lighteval.metrics.metrics import Metrics
-from lighteval.models.model_output import ModelResponse
-from lighteval.metrics.utils.metric_utils import (
-    SampleLevelMetric,
-    SamplingMethod,
-    SampleLevelComputation,
-)
+
+import numpy as np
+
 from lighteval.metrics.armenian_metrics import (
-    pos_metric,
-    ner_span_metric,
     armenian_exam_metric,
     armenian_mcqa_metric,
-    bert_score_arm,
     armenian_mmlu_pro_metric,
+    bert_score_arm,
+    ner_span_metric,
+    pos_metric,
 )
+from lighteval.metrics.metrics import Metrics
+from lighteval.metrics.utils.metric_utils import (
+    SampleLevelComputation,
+    SampleLevelMetric,
+    SamplingMethod,
+)
+from lighteval.models.model_output import ModelResponse
+from lighteval.tasks.lighteval_task import Doc, LightevalTaskConfig
+
 
 prompt_language = "hy"
 SIB200_LABEL_MAP = {
@@ -42,14 +67,12 @@ URGENCY_LABELS = list(URGENCY_LABEL_MAP.values())
 
 PROMPTS_SIB200 = {
     "instruction": {
-        "hy": (
-            "Տրված տեքստի համար ընտրիր այն թեման, որը լավագույնս նկարագրում է այն։\n"
-        ),
+        "hy": ("Տրված տեքստի համար ընտրիր այն թեման, որը լավագույնս նկարագրում է այն։\n"),
         "en": ("For the given text, choose the topic that best describes it.\n"),
     },
     "query": {
-        "hy": ("Տեքստ\n{text}\n\n" "Հնարավոր թեմաներ՝ {labels}"),
-        "en": ("Text: {text}\n" "Possible topics: {labels}"),
+        "hy": ("Տեքստ\n{text}\n\nՀնարավոր թեմաներ՝ {labels}"),
+        "en": ("Text: {text}\nPossible topics: {labels}"),
     },
 }
 
@@ -59,13 +82,8 @@ PROMPTS_SENTIMENT = {
         "en": ("Determine the sentiment of the text.\n"),
     },
     "query": {
-        "hy": (
-            "Տեքստ\n{text}\n\n"
-            "Հնարավոր տարբերակներ՝ դրական, բացասական, չեզոք, երկիմաստ"
-        ),
-        "en": (
-            "Text: {text}\n" "Possible options: positive, negative, neutral, ambiguous."
-        ),
+        "hy": ("Տեքստ\n{text}\n\nՀնարավոր տարբերակներ՝ դրական, բացասական, չեզոք, երկիմաստ"),
+        "en": ("Text: {text}\nPossible options: positive, negative, neutral, ambiguous."),
     },
 }
 PROMPTS_URGENCY = {
@@ -74,8 +92,8 @@ PROMPTS_URGENCY = {
         "en": ("Determine the urgency level of the email.\n"),
     },
     "query": {
-        "hy": ("Նամակ\n{text}\n\n" "Տարբերակներ՝ բարձր, միջին, ցածր"),
-        "en": ("Email: {text}\n" "Options: high, medium, low"),
+        "hy": ("Նամակ\n{text}\n\nՏարբերակներ՝ բարձր, միջին, ցածր"),
+        "en": ("Email: {text}\nOptions: high, medium, low"),
     },
 }
 
@@ -141,14 +159,14 @@ Context: {context}
 Possible Choices:""",
     },
     3: {
-        "system": """The following is multiple-option question. Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists. 
+        "system": """The following is multiple-option question. Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists.
 Think step by step and then output the answer in the format of ['Ճիշտ է', 'Սխալ է', 'Չգիտեմ', 'Ճիշտ է', 'Սխալ է', 'Ճիշտ է'].""",
         "input": """Instruction: {question}
 Context: {context}
 Options:""",
     },
     4: {
-        "system": """You are presented with a matching task. Match each item from Character Items to its corresponding item from Numeric Items. Character Items are: (Ա, Բ, Գ, ...). Numeric Items are: (1, 2, 3, ...). 
+        "system": """You are presented with a matching task. Match each item from Character Items to its corresponding item from Numeric Items. Character Items are: (Ա, Բ, Գ, ...). Numeric Items are: (1, 2, 3, ...).
 Think step by step, considering each item and its possible matches.
 Return your answer as a set of key-value pairs where the keys are the items from Character Items and the values are the corresponding items from Numeric Items.
 Ensure that the output includes only the items listed in Character Items and that the number of keys in your output matches the number of items in Character Items. For example, if Character Items are (Ա, Բ, Գ), and Numeric Items are (1, 2, 3, 4, 5) the output should be {"Ա": 2, "Բ": 1, "Գ": 5}.""",
@@ -171,14 +189,10 @@ def prompt_exam_history(line, task_name=None):
     input_prompt = PROMPTS_EXAM_HISTORY[line["task_type"]]["input"]
 
     if not line["context"]:
-        formatted_input_prompt = input_prompt.format(
-            question=line["question"], context=""
-        )
+        formatted_input_prompt = input_prompt.format(question=line["question"], context="")
         formatted_input_prompt = formatted_input_prompt.replace("\nContext: ", "")
     else:
-        formatted_input_prompt = input_prompt.format(
-            question=line["question"], context=line["context"]
-        )
+        formatted_input_prompt = input_prompt.format(question=line["question"], context=line["context"])
 
     choice_map = "123456789"
     for i in range(len(line["choices"])):
@@ -224,20 +238,16 @@ Options:""",
 
 
 def prompt_exam_math(line, task_name=None):
-    if not line["task_type"] in PROMPTS_EXAM_MATH:
+    if line["task_type"] not in PROMPTS_EXAM_MATH:
         return None
     system_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["system"]
     input_prompt = PROMPTS_EXAM_MATH[line["task_type"]]["input"]
 
-    formatted_input_prompt = input_prompt.format(
-        task=line["task"], question=line["question"]
-    )
+    formatted_input_prompt = input_prompt.format(task=line["task"], question=line["question"])
     choice_map = "ABCDEFGHIJ"
     if line["task_type"] != 7:
         for i in range(len(line["choices"])):
-            formatted_input_prompt += "{}. {}\n".format(
-                choice_map[i], line["choices"][i]
-            )
+            formatted_input_prompt += "{}. {}\n".format(choice_map[i], line["choices"][i])
 
     formatted_input_prompt += "Output: "
 
@@ -267,7 +277,7 @@ Context: {context}
 Possible Choices:""",
     },
     3: {
-        "system": """The following are multiple-option questions (with answers). Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists. 
+        "system": """The following are multiple-option questions (with answers). Each question has exactly 6 options. For each option, decide whether it is {Ճիշտ է, Սխալ է, Չգիտեմ}. Use the provided context or passage to guide your reasoning if the context exists.
 Think step by step and then output the answer in the format of ['Ճիշտ է', 'Սխալ է', 'Չգիտեմ', 'Ճիշտ է', 'Սխալ է', 'Ճիշտ է'].""",
         "input": """Instruction: {question}
 Context: {context}
@@ -281,14 +291,10 @@ def prompt_exam_literature(line, task_name=None):
     input_prompt = PROMPTS_EXAM_LITERATURE[line["task_type"]]["input"]
 
     if not line["context"]:
-        formatted_input_prompt = input_prompt.format(
-            question=line["question"], context=""
-        )
+        formatted_input_prompt = input_prompt.format(question=line["question"], context="")
         formatted_input_prompt = formatted_input_prompt.replace("\nContext: ", "")
     else:
-        formatted_input_prompt = input_prompt.format(
-            question=line["question"], context=line["context"]
-        )
+        formatted_input_prompt = input_prompt.format(question=line["question"], context=line["context"])
 
     choice_map = "123456789"
     for i in range(len(line["choices"])):
@@ -313,13 +319,9 @@ def prompt_sib200(line, task_name=None):
     gold_index = choices.index(gold)
 
     choice_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    formatted_labels = "\n".join(
-        [f"({choice_map[i]}) {opt}" for i, opt in enumerate(choices)]
-    )
+    formatted_labels = "\n".join([f"({choice_map[i]}) {opt}" for i, opt in enumerate(choices)])
 
-    query = PROMPTS_SIB200["query"][prompt_language].format(
-        labels=formatted_labels, text=line["text"]
-    )
+    query = PROMPTS_SIB200["query"][prompt_language].format(labels=formatted_labels, text=line["text"])
     instruction = PROMPTS_SIB200["instruction"][prompt_language]
 
     return Doc(
@@ -378,36 +380,36 @@ PROMPTS_QA_CONTEXT = {
 }
 
 
-def prompt_ms_marco(line, task_name=None):
+def prompt_ms_marco(line, task_name=None):  # noqa: C901
     raw = line["armenian"]
 
     question, context, answers = "", "", ""
     section = None
     buffer = []
 
-    for l in raw.splitlines():
-        if l.startswith("INPUT:"):
+    for raw_line in raw.splitlines():
+        if raw_line.startswith("INPUT:"):
             if section == "ANSWERS":
                 answers = "\n".join(buffer).strip()
             elif section == "CONTEXT":
                 context = "\n".join(buffer).strip()
             elif section == "INPUT":
                 question = "\n".join(buffer).strip()
-            section, buffer = "INPUT", [l.replace("INPUT:", "").strip()]
-        elif l.startswith("CONTEXT:"):
+            section, buffer = "INPUT", [raw_line.replace("INPUT:", "").strip()]
+        elif raw_line.startswith("CONTEXT:"):
             if section == "INPUT":
                 question = "\n".join(buffer).strip()
             elif section == "ANSWERS":
                 answers = "\n".join(buffer).strip()
-            section, buffer = "CONTEXT", [l.replace("CONTEXT:", "").strip()]
-        elif l.startswith("ANSWERS:"):
+            section, buffer = "CONTEXT", [raw_line.replace("CONTEXT:", "").strip()]
+        elif raw_line.startswith("ANSWERS:"):
             if section == "CONTEXT":
                 context = "\n".join(buffer).strip()
             elif section == "INPUT":
                 question = "\n".join(buffer).strip()
-            section, buffer = "ANSWERS", [l.replace("ANSWERS:", "").strip()]
+            section, buffer = "ANSWERS", [raw_line.replace("ANSWERS:", "").strip()]
         else:
-            buffer.append(l.strip())
+            buffer.append(raw_line.strip())
 
     if section == "INPUT":
         question = "\n".join(buffer).strip()
@@ -416,9 +418,7 @@ def prompt_ms_marco(line, task_name=None):
     elif section == "ANSWERS":
         answers = "\n".join(buffer).strip()
 
-    query = PROMPTS_QA_CONTEXT["query"][prompt_language].format(
-        context=context, question=question
-    )
+    query = PROMPTS_QA_CONTEXT["query"][prompt_language].format(context=context, question=question)
     return Doc(
         instruction=PROMPTS_QA_CONTEXT["instruction"][prompt_language],
         task_name=task_name,
@@ -432,9 +432,7 @@ def prompt_ms_marco(line, task_name=None):
 def prompt_squad(line, task_name=None):
     context = line["context"]
     question = line["question"]
-    query = PROMPTS_QA_CONTEXT["query"][prompt_language].format(
-        context=context, question=question
-    )
+    query = PROMPTS_QA_CONTEXT["query"][prompt_language].format(context=context, question=question)
     return Doc(
         task_name=task_name,
         query=query,
@@ -450,8 +448,8 @@ PROMPTS_CONTEXT_MCQA = {
         "en": "Choose the correct answer from the given options using the context.\n",
     },
     "query": {
-        "hy": ("Կոնտեքստ\n{context}\n\n" "Հարց\n{question}\n" "Ճիշտ տարբերակ:"),
-        "en": ("Context: {context}\n" "Question: {question}\n" "Correct Option:"),
+        "hy": ("Կոնտեքստ\n{context}\n\nՀարց\n{question}\nՃիշտ տարբերակ:"),
+        "en": ("Context: {context}\nQuestion: {question}\nCorrect Option:"),
     },
 }
 
@@ -461,8 +459,8 @@ PROMPTS_DREAM = {
         "en": "Answer the question based on the dialogue.\n",
     },
     "query": {
-        "hy": ("Երկխոսություն\n {dialogue}\n\n" "Հարց\n{question}\n" "Ճիշտ տարբերակ:"),
-        "en": ("Dialogue:\n{dialogue}\n" "Question: {question}\n" "Correct Option:"),
+        "hy": ("Երկխոսություն\n {dialogue}\n\nՀարց\n{question}\nՃիշտ տարբերակ:"),
+        "en": ("Dialogue:\n{dialogue}\nQuestion: {question}\nCorrect Option:"),
     },
 }
 
@@ -482,9 +480,7 @@ def prompt_belebele(line, task_name=None):
     for i, opt in enumerate(choices):
         question += f"\n({choice_map[i]}) {opt}"
 
-    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
-        context=passage, question=question
-    )
+    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(context=passage, question=question)
     instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
 
     return Doc(
@@ -507,9 +503,7 @@ def prompt_scientific(line, task_name=None):
     for i, opt in enumerate(choices):
         question += f"\n({choice_map[i]}) {opt}"
 
-    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
-        context=context, question=question
-    )
+    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(context=context, question=question)
     instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
 
     return Doc(
@@ -537,9 +531,7 @@ def prompt_syndarin(line, task_name=None):
     for i, opt in enumerate(choices):
         question += f"\n({choice_map[i]}) {opt}"
 
-    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(
-        context=context, question=question
-    )
+    query = PROMPTS_CONTEXT_MCQA["query"][prompt_language].format(context=context, question=question)
     instruction = PROMPTS_CONTEXT_MCQA["instruction"][prompt_language]
 
     return Doc(
@@ -565,9 +557,7 @@ def prompt_dream(line, task_name=None):
     for i, opt in enumerate(choices):
         question += f"\n({choice_map[i]}) {opt}"
 
-    query = PROMPTS_DREAM["query"][prompt_language].format(
-        dialogue=dialogue, question=question
-    )
+    query = PROMPTS_DREAM["query"][prompt_language].format(dialogue=dialogue, question=question)
     instruction = PROMPTS_DREAM["instruction"][prompt_language]
 
     return Doc(
@@ -586,8 +576,8 @@ PROMPTS_MCQA = {
         "en": "Answer the question by choosing the correct option.\n",
     },
     "query": {
-        "hy": "{question}\n" "Ճիշտ տարբերակ:",
-        "en": "{question}\n" "Correct Option:",
+        "hy": "{question}\nՃիշտ տարբերակ:",
+        "en": "{question}\nCorrect Option:",
     },
 }
 
@@ -675,8 +665,8 @@ PROMPTS_NER = {
         ),
     },
     "query": {
-        "hy": ("Տեքստ\n{text}\n\n" "Հնարավոր թեգեր՝ {tags}"),
-        "en": ("Text: {text}\n" "Possible tags: {tags}\n" ""),
+        "hy": ("Տեքստ\n{text}\n\nՀնարավոր թեգեր՝ {tags}"),
+        "en": ("Text: {text}\nPossible tags: {tags}\n"),
     },
 }
 
@@ -692,18 +682,16 @@ PROMPTS_UPOS = {
         ),
     },
     "query": {
-        "hy": ("Տրված բառը՝ '{form}'\n" "Խոսքի մասեր՝ {tags}\n"),
-        "en": ("Given word: '{form}'\n" "Parts of speech: {tags}\n"),
+        "hy": ("Տրված բառը՝ '{form}'\nԽոսքի մասեր՝ {tags}\n"),
+        "en": ("Given word: '{form}'\nParts of speech: {tags}\n"),
     },
 }
 
 
 def prompt_finer(line, task_name=None):
     gold = [(t, ty) for t, ty in line["gold_entities"]]
-    tag_pool = sorted(set(ty for _, ty in gold))
-    query = PROMPTS_NER["query"][prompt_language].format(
-        text=line["text"], tags=", ".join(tag_pool)
-    )
+    tag_pool = sorted({ty for _, ty in gold})
+    query = PROMPTS_NER["query"][prompt_language].format(text=line["text"], tags=", ".join(tag_pool))
     return Doc(
         instruction=PROMPTS_NER["instruction"][prompt_language],
         task_name=task_name,
@@ -750,9 +738,7 @@ def prompt_pioner(line, task_name=None):
 def prompt_ud_armtdp(line, task_name=None):
     word = line["form"]
     gold = [(word, str(line["upos_hy"]))] if line.get("upos_hy") else []
-    query = PROMPTS_UPOS["query"][prompt_language].format(
-        form=word, tags=", ".join(UPOS_TAGS)
-    )
+    query = PROMPTS_UPOS["query"][prompt_language].format(form=word, tags=", ".join(UPOS_TAGS))
     return Doc(
         instruction=PROMPTS_UPOS["instruction"][prompt_language],
         task_name=task_name,
@@ -803,8 +789,8 @@ PROMPTS_TRANSLATION = {
         "en": "Translate the given English text into Armenian and return the translated text only.\n",
     },
     "query": {
-        "hy": "Անգլերեն: {eng}\n\n" "Հայերեն:",
-        "en": "English: {eng}\n\n" "Armenian:",
+        "hy": "Անգլերեն: {eng}\n\nՀայերեն:",
+        "en": "English: {eng}\n\nArmenian:",
     },
 }
 
@@ -825,9 +811,7 @@ def prompt_email_sum(line, task_name=None):
         query=query,
         choices=[line["summary"]],
         gold_index=0,
-        instruction=PROMPTS_EMAIL_SUM["instruction"][prompt_language].format(
-            num_sents=num_sents
-        ),
+        instruction=PROMPTS_EMAIL_SUM["instruction"][prompt_language].format(num_sents=num_sents),
     )
 
 
@@ -839,9 +823,7 @@ def prompt_conv_sum(line, task_name=None):
         query=query,
         choices=[line["summary"]],
         gold_index=0,
-        instruction=PROMPTS_CONV_SUM["instruction"][prompt_language].format(
-            num_sents=num_sents
-        ),
+        instruction=PROMPTS_CONV_SUM["instruction"][prompt_language].format(num_sents=num_sents),
     )
 
 
@@ -867,7 +849,7 @@ def prompt_translation(line, task_name=None):
     )
 
 
-PUNCTUATION_CHARS = set([",", "՝", ":", "։", "`"])
+PUNCTUATION_CHARS = {",", "՝", ":", "։", "`"}
 
 PROMPTS_SPACE_FIX = {
     "instruction": {
@@ -880,8 +862,8 @@ PROMPTS_SPACE_FIX = {
         ),
     },
     "query": {
-        "hy": ("Տեքստ: {corrupted}\n" "Պատասխան:"),
-        "en": ("Text: {corrupted}\n" "Answer:"),
+        "hy": ("Տեքստ: {corrupted}\nՊատասխան:"),
+        "en": ("Text: {corrupted}\nAnswer:"),
     },
 }
 
@@ -896,8 +878,8 @@ PROMPTS_PUNCTUATION = {
         ),
     },
     "query": {
-        "hy": ("Տեքստ: {corrupted}\n" "Պատասխան:"),
-        "en": ("Text: {corrupted}\n" "Answer:"),
+        "hy": ("Տեքստ: {corrupted}\nՊատասխան:"),
+        "en": ("Text: {corrupted}\nAnswer:"),
     },
 }
 
@@ -909,13 +891,8 @@ def mean_corpus_level(items):
 def extract_fixed_text(model_response):
     raw_text = (
         model_response.text_post_processed[0]
-        if hasattr(model_response, "text_post_processed")
-        and model_response.text_post_processed
-        else (
-            model_response.text[0]
-            if hasattr(model_response, "text") and model_response.text
-            else ""
-        )
+        if hasattr(model_response, "text_post_processed") and model_response.text_post_processed
+        else (model_response.text[0] if hasattr(model_response, "text") and model_response.text else "")
     ).strip()
 
     match = re.search(r"\{.*?\}", raw_text, re.DOTALL)
@@ -973,9 +950,7 @@ class SpaceAccuracyComputation(SampleLevelComputation):
                 pred_words.remove(g)
                 matched += 1
                 continue
-            found_idx = next(
-                (i for i, p in enumerate(pred_words) if p.endswith(g)), None
-            )
+            found_idx = next((i for i, p in enumerate(pred_words) if p.endswith(g)), None)
             if found_idx is not None:
                 matched += 1
                 pred_words.pop(found_idx)
@@ -1044,12 +1019,8 @@ class ArmenianEvalTask(LightevalTaskConfig):
         evaluation_splits=None,
         hf_avail_splits=None,
     ):
-        default_eval_splits = (
-            evaluation_splits if evaluation_splits is not None else ["train"]
-        )
-        default_hf_splits = (
-            hf_avail_splits if hf_avail_splits is not None else ["train"]
-        )
+        default_eval_splits = evaluation_splits if evaluation_splits is not None else ["train"]
+        default_hf_splits = hf_avail_splits if hf_avail_splits is not None else ["train"]
 
         super().__init__(
             name=f"armenian:{short_name}",
@@ -1095,12 +1066,8 @@ TASKS_TABLE = [
         [punctuation_accuracy_metric],
         generation=True,
     ),
-    ArmenianEvalTask(
-        "finer", "finer", prompt_finer, [ner_span_metric], generation=True
-    ),
-    ArmenianEvalTask(
-        "pioner", "pioner", prompt_pioner, [ner_span_metric], generation=True
-    ),
+    ArmenianEvalTask("finer", "finer", prompt_finer, [ner_span_metric], generation=True),
+    ArmenianEvalTask("pioner", "pioner", prompt_pioner, [ner_span_metric], generation=True),
     ArmenianEvalTask("pos", "pos", prompt_ud_armtdp, [pos_metric], generation=True),
     ArmenianEvalTask("arak", "simpleqa", prompt_qa, [Metrics.bleu], generation=True),
     ArmenianEvalTask(
@@ -1110,9 +1077,7 @@ TASKS_TABLE = [
         [Metrics.bleu],
         generation=True,
     ),
-    ArmenianEvalTask(
-        "squad", "squad-in-context-qa", prompt_squad, [Metrics.bleu], generation=True
-    ),
+    ArmenianEvalTask("squad", "squad-in-context-qa", prompt_squad, [Metrics.bleu], generation=True),
     ArmenianEvalTask(
         "belebele",
         "belebele-in-context-mcqa",
