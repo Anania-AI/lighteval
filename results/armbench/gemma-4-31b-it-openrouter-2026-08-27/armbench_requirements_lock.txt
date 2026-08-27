@@ -1,0 +1,6 @@
+# Compatibility pins verified in WSL Ubuntu-22.04 on 2026-08-27.
+# Install the ArmBench fork editable with its litellm extra first, then apply
+# these exact overrides until a complete lock is generated for the safe runner.
+litellm==1.66.0
+pydantic==2.13.4
+xxhash==3.5.0

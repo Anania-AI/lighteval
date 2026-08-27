@@ -1,0 +1,22 @@
+model_parameters:
+  model_name: "openrouter/google/gemma-4-31b-it"
+  provider: "openrouter"
+  max_model_length: 262144
+  concurrent_requests: 4
+  api_max_retry: 3
+  api_retry_sleep: 2.0
+  api_retry_multiplier: 2.0
+  timeout: 180
+  caching: false
+  reasoning_enabled: false
+  max_cost_usd: 2.0
+  extra_body:
+    reasoning:
+      enabled: false
+    provider:
+      order:
+        - "DeepInfra"
+      allow_fallbacks: false
+  generation_parameters:
+    temperature: 0
+    seed: 0

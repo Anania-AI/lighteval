@@ -1,0 +1,55 @@
+{
+  "benchmark": "ArmBench-LLM",
+  "submission_type": "completed_full_run",
+  "model": "google/gemma-4-31b-it",
+  "endpoint_model": "openrouter/google/gemma-4-31b-it",
+  "provider": "DeepInfra",
+  "provider_fallbacks": false,
+  "reasoning": {
+    "enabled": false
+  },
+  "generation": {
+    "temperature": 0.0,
+    "seed": 0
+  },
+  "score": {
+    "overall": 0.6141561129879723,
+    "display": 0.6142,
+    "aggregation": "unweighted mean of 10 ArmBench category scores",
+    "categories": {
+      "ner": 0.7168503431448149,
+      "pos": 0.8,
+      "reading": 0.5842618319388203,
+      "classification": 0.6428571428571428,
+      "mcqa": 0.8733333333333333,
+      "generation": 0.10866063554149938,
+      "translation": 0.2838959010360886,
+      "exams": 0.5,
+      "text_processing": 0.8369071472332297,
+      "mmlu": 0.7947947947947948
+    }
+  },
+  "completeness": {
+    "tasks": 24,
+    "detail_rows": 2928,
+    "nonblank_outputs": 2928
+  },
+  "usage": {
+    "input_tokens_recorded": 1059395,
+    "output_tokens_recorded": 868204,
+    "reasoning_tokens_recorded": 0,
+    "cost_usd_recorded_approximate": 0.38690687,
+    "cost_note": "Auxiliary request ledger deduplicates identical request-derived keys; cost is approximate and does not affect scoring."
+  },
+  "runtime_seconds": 5662.623924724001,
+  "run_timestamp": "2026-08-27T13:15:51.222481",
+  "code": {
+    "repository": "https://github.com/Metric-AI-Lab/lighteval",
+    "commit": "2e22157f66c25a476fd2e5ebf6f75d84dd6efd5e",
+    "local_patch": "runner.patch.gz"
+  },
+  "dataset": {
+    "repository": "Metric-AI/ArmBench-LLM-data",
+    "revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3"
+  }
+}

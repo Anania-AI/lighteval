@@ -1,0 +1,1546 @@
+{
+  "config_general": {
+    "lighteval_sha": "2e22157f66c25a476fd2e5ebf6f75d84dd6efd5e",
+    "num_fewshot_seeds": 1,
+    "max_samples": null,
+    "job_id": "0",
+    "start_time": 59642.965544659,
+    "end_time": 65305.589469383,
+    "total_evaluation_time_secondes": "5662.623924724001",
+    "model_config": {
+      "model_name": "openrouter/google/gemma-4-31b-it",
+      "generation_parameters": {
+        "num_blocks": null,
+        "block_size": null,
+        "early_stopping": null,
+        "repetition_penalty": null,
+        "frequency_penalty": null,
+        "length_penalty": null,
+        "presence_penalty": null,
+        "max_new_tokens": null,
+        "min_new_tokens": null,
+        "seed": 0,
+        "stop_tokens": null,
+        "temperature": 0.0,
+        "top_k": null,
+        "min_p": null,
+        "top_p": null,
+        "truncate_prompt": null,
+        "cache_implementation": null,
+        "response_format": null
+      },
+      "system_prompt": null,
+      "cache_dir": "~/.cache/huggingface/lighteval",
+      "provider": "openrouter",
+      "base_url": null,
+      "api_key": null,
+      "concurrent_requests": 4,
+      "verbose": false,
+      "max_model_length": 262144,
+      "api_max_retry": 3,
+      "api_retry_sleep": 2.0,
+      "api_retry_multiplier": 2.0,
+      "timeout": 180.0,
+      "caching": false,
+      "extra_body": {
+        "reasoning": {
+          "enabled": false
+        },
+        "provider": {
+          "order": [
+            "DeepInfra"
+          ],
+          "allow_fallbacks": false
+        }
+      },
+      "reasoning_enabled": false,
+      "max_cost_usd": 2.0
+    },
+    "model_name": "openrouter/google/gemma-4-31b-it"
+  },
+  "results": {
+    "armenian:arak|0": {
+      "bleu": 1.0337058405891717,
+      "bleu_stderr": 0.00753322964892188
+    },
+    "armenian:belebele|0": {
+      "exact_match_mcqa": 0.78,
+      "exact_match_mcqa_stderr": 0.059178043363451366,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:conversation|0": {
+      "bleu": 5.6604866681900035,
+      "bleu_stderr": 0.02485890358706799,
+      "bert_score_arm": 0.8204839265346527,
+      "bert_score_arm_stderr": 0.007123267516151871
+    },
+    "armenian:dream|0": {
+      "exact_match_mcqa": 0.96,
+      "exact_match_mcqa_stderr": 0.02799416848895062,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:email|0": {
+      "bleu": 13.45334500533099,
+      "bleu_stderr": 0.02593716995862637,
+      "bert_score_arm": 0.8524567592144012,
+      "bert_score_arm_stderr": 0.004398033484112
+    },
+    "armenian:exam_history|0": {
+      "armenian_exam_score": 5.5,
+      "armenian_exam_score_stderr": 0.029707405936356457,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:exam_literature|0": {
+      "armenian_exam_score": 7.25,
+      "armenian_exam_score_stderr": 0.04259359358183121,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:exam_math|0": {
+      "armenian_exam_score": 17.25,
+      "armenian_exam_score_stderr": 0.04930661357406474,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:finer|0": {
+      "ner_accuracy": 0.7339625910515346,
+      "ner_accuracy_stderr": 0.020535822447312713,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:hartak|0": {
+      "exact_match_mcqa": 0.8666666666666667,
+      "exact_match_mcqa_stderr": 0.05124707431905382,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:include|0": {
+      "exact_match_mcqa": 0.62,
+      "exact_match_mcqa_stderr": 0.06934092056863768,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:mmlu_pro|0": {
+      "armenian_mmlu_pro_score": 0.7947947947947948,
+      "armenian_mmlu_pro_score_stderr": 0.01278369565936703,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:ms_marco|0": {
+      "bleu": 26.328556836284253,
+      "bleu_stderr": 0.09817208974860206
+    },
+    "armenian:paraphrase|0": {
+      "bleu": 23.316716702489586,
+      "bleu_stderr": 0.06709984775837208,
+      "bert_score_arm": 0.9342435792088508,
+      "bert_score_arm_stderr": 0.006644314865874935
+    },
+    "armenian:pioner|0": {
+      "ner_accuracy": 0.6997380952380952,
+      "ner_accuracy_stderr": 0.04257622505699614,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:pos|0": {
+      "ud_pos_regex_acc": 0.8,
+      "ud_pos_regex_acc_stderr": 0.0012291636356658322,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:punctuation|0": {
+      "punctuation_accuracy": 0.7121666666666667,
+      "punctuation_accuracy_stderr": 0.034305564756879334,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:scientific|0": {
+      "exact_match_mcqa": 1.0,
+      "exact_match_mcqa_stderr": 0.0,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:sentiment|0": {
+      "exact_match_mcqa": 0.7,
+      "exact_match_mcqa_stderr": 0.046056618647183814,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:short_sentences_translation|0": {
+      "bleu": 28.38959010360886,
+      "bleu_stderr": 0.1214889551247887,
+      "bert_score_arm": 0.8706252151727676,
+      "bert_score_arm_stderr": 0.012981021797493466
+    },
+    "armenian:space_fix|0": {
+      "space_accuracy": 0.9616476277997925,
+      "space_accuracy_stderr": 0.0030019276903826136,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:squad|0": {
+      "bleu": 5.135692466459204,
+      "bleu_stderr": 0.03652430216433473
+    },
+    "armenian:syndarin|0": {
+      "exact_match_mcqa": 1.0,
+      "exact_match_mcqa_stderr": 0.0,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:topic-14class|0": {
+      "exact_match_mcqa": 0.5857142857142857,
+      "exact_match_mcqa_stderr": 0.029491087361769672,
+      "bleu": 0.0,
+      "bleu_stderr": 0.0
+    },
+    "armenian:_average|0": {
+      "bleu": 4.304920567623003,
+      "bleu_stderr": 0.01590060408294641
+    },
+    "all": {
+      "bleu": 14.759727660421722,
+      "bleu_stderr": 0.05451635685581625,
+      "exact_match_mcqa": 0.814047619047619,
+      "exact_match_mcqa_stderr": 0.03541348909363087,
+      "bert_score_arm": 0.8694523700326681,
+      "bert_score_arm_stderr": 0.007786659415908068,
+      "armenian_exam_score": 10.0,
+      "armenian_exam_score_stderr": 0.0405358710307508,
+      "ner_accuracy": 0.7168503431448149,
+      "ner_accuracy_stderr": 0.031556023752154425,
+      "armenian_mmlu_pro_score": 0.7947947947947948,
+      "armenian_mmlu_pro_score_stderr": 0.01278369565936703,
+      "ud_pos_regex_acc": 0.8,
+      "ud_pos_regex_acc_stderr": 0.0012291636356658322,
+      "punctuation_accuracy": 0.7121666666666667,
+      "punctuation_accuracy_stderr": 0.034305564756879334,
+      "space_accuracy": 0.9616476277997925,
+      "space_accuracy_stderr": 0.0030019276903826136
+    }
+  },
+  "versions": {},
+  "config_tasks": {
+    "armenian:arak|0": {
+      "name": "armenian:arak",
+      "prompt_function": "prompt_qa",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "simpleqa",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:belebele|0": {
+      "name": "armenian:belebele",
+      "prompt_function": "prompt_belebele",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "belebele-in-context-mcqa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:conversation|0": {
+      "name": "armenian:conversation",
+      "prompt_function": "prompt_conv_sum",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "conversational-sum",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        },
+        {
+          "metric_name": "bert_score_arm",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "BertScoreArm(scorer=<lighteval.metrics.imports.bert_scorer.BERTScorer object at 0x7bc9f5d4c0d0>)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:dream|0": {
+      "name": "armenian:dream",
+      "prompt_function": "prompt_dream",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "conversation-in-context-qa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:email|0": {
+      "name": "armenian:email",
+      "prompt_function": "prompt_email_sum",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "email-sum",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        },
+        {
+          "metric_name": "bert_score_arm",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "BertScoreArm(scorer=<lighteval.metrics.imports.bert_scorer.BERTScorer object at 0x7bc9f5bedff0>)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:exam_history|0": {
+      "name": "armenian:exam_history",
+      "prompt_function": "prompt_exam_history",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "exam_history",
+      "metrics": [
+        {
+          "metric_name": "armenian_exam_score",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "ArmenianExamComputation()",
+          "corpus_level_fn": "sum",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:exam_literature|0": {
+      "name": "armenian:exam_literature",
+      "prompt_function": "prompt_exam_literature",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "exam_literature",
+      "metrics": [
+        {
+          "metric_name": "armenian_exam_score",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "ArmenianExamComputation()",
+          "corpus_level_fn": "sum",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:exam_math|0": {
+      "name": "armenian:exam_math",
+      "prompt_function": "prompt_exam_math",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "exam_math",
+      "metrics": [
+        {
+          "metric_name": "armenian_exam_score",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "ArmenianExamComputation()",
+          "corpus_level_fn": "sum",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:finer|0": {
+      "name": "armenian:finer",
+      "prompt_function": "prompt_finer",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "finer",
+      "metrics": [
+        {
+          "metric_name": "ner_accuracy",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "NERSpanComputation()",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:hartak|0": {
+      "name": "armenian:hartak",
+      "prompt_function": "prompt_hartak_mcqa",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "public-services-mcqa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:include|0": {
+      "name": "armenian:include",
+      "prompt_function": "prompt_include",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "include-mcqa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:mmlu_pro|0": {
+      "name": "armenian:mmlu_pro",
+      "prompt_function": "prompt_mmlu_pro",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "mmlu_pro",
+      "metrics": [
+        {
+          "metric_name": "armenian_mmlu_pro_score",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "MMLUProComputation()",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:ms_marco|0": {
+      "name": "armenian:ms_marco",
+      "prompt_function": "prompt_ms_marco",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "ms-marco-in-context-qa",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:paraphrase|0": {
+      "name": "armenian:paraphrase",
+      "prompt_function": "prompt_paraphrase",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "paraphrase",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        },
+        {
+          "metric_name": "bert_score_arm",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "BertScoreArm(scorer=<lighteval.metrics.imports.bert_scorer.BERTScorer object at 0x7bc9f6761120>)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:pioner|0": {
+      "name": "armenian:pioner",
+      "prompt_function": "prompt_pioner",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "pioner",
+      "metrics": [
+        {
+          "metric_name": "ner_accuracy",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "NERSpanComputation()",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:pos|0": {
+      "name": "armenian:pos",
+      "prompt_function": "prompt_ud_armtdp",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "pos",
+      "metrics": [
+        {
+          "metric_name": "ud_pos_regex_acc",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "UDPosComputation()",
+          "corpus_level_fn": "pos_agg",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:punctuation|0": {
+      "name": "armenian:punctuation",
+      "prompt_function": "prompt_punctuation",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "punctuation",
+      "metrics": [
+        {
+          "metric_name": "punctuation_accuracy",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "PunctuationAccuracyComputation()",
+          "corpus_level_fn": "mean_corpus_level",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:scientific|0": {
+      "name": "armenian:scientific",
+      "prompt_function": "prompt_scientific",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "scientific-in-context-mcqa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:sentiment|0": {
+      "name": "armenian:sentiment",
+      "prompt_function": "prompt_sentiment",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "sentiment",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:short_sentences_translation|0": {
+      "name": "armenian:short_sentences_translation",
+      "prompt_function": "prompt_translation",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "translation_short_sentences",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        },
+        {
+          "metric_name": "bert_score_arm",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "BertScoreArm(scorer=<lighteval.metrics.imports.bert_scorer.BERTScorer object at 0x7bc9f5d26ef0>)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:space_fix|0": {
+      "name": "armenian:space_fix",
+      "prompt_function": "prompt_space_fix",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "space_fix",
+      "metrics": [
+        {
+          "metric_name": "space_accuracy",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "SpaceAccuracyComputation()",
+          "corpus_level_fn": "mean_corpus_level",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:squad|0": {
+      "name": "armenian:squad",
+      "prompt_function": "prompt_squad",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "squad-in-context-qa",
+      "metrics": [
+        {
+          "metric_name": "bleu",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GenerativePreparator()",
+          "corpus_level_fn": "CorpusLevelTranslationMetric(metric_type=bleu, lang=)",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:syndarin|0": {
+      "name": "armenian:syndarin",
+      "prompt_function": "prompt_syndarin",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "syndarin-in-context-mcqa",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    },
+    "armenian:topic-14class|0": {
+      "name": "armenian:topic-14class",
+      "prompt_function": "prompt_sib200",
+      "hf_repo": "Metric-AI/ArmBench-LLM-data",
+      "hf_subset": "topic-14class",
+      "metrics": [
+        {
+          "metric_name": "exact_match_mcqa",
+          "higher_is_better": true,
+          "category": "GENERATIVE",
+          "sample_level_fn": "GeneralizedExactMatch(extractors=[<function extract_answer_for_letter_choices at 0x7bca4debad40>, <function extract_again_for_letter_choices at 0x7bca4debadd0>, <function extract_final_for_letter_choices at 0x7bca4debae60>], choice_map=None)",
+          "corpus_level_fn": "mean",
+          "batched_compute": false
+        }
+      ],
+      "hf_data_files": null,
+      "solver": null,
+      "scorer": null,
+      "sample_fields": null,
+      "sample_to_fewshot": null,
+      "filter": null,
+      "hf_revision": "c1a7672da0b615de6d8437c74e4aa4c2f1a681f3",
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 2048,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "original_num_docs": -1,
+      "effective_num_docs": -1,
+      "must_remove_duplicate_docs": false,
+      "num_fewshots": 0,
+      "version": 0
+    }
+  },
+  "summary_tasks": {
+    "armenian:arak|0": {
+      "hashes": {
+        "hash_examples": "bfcf4a69b12abd70",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:belebele|0": {
+      "hashes": {
+        "hash_examples": "0d5f8f9bfcaf0ef2",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:conversation|0": {
+      "hashes": {
+        "hash_examples": "08a1a9e5b2fdfa09",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:dream|0": {
+      "hashes": {
+        "hash_examples": "37bee03b88ed9e4f",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:email|0": {
+      "hashes": {
+        "hash_examples": "2929c6081f1454bf",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:exam_history|0": {
+      "hashes": {
+        "hash_examples": "545ffad3de25cb08",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "8b83e1401786fc5c",
+        "hash_cont_tokens": "8b83e1401786fc5c"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:exam_literature|0": {
+      "hashes": {
+        "hash_examples": "f3bcef0254968e55",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "7b8cdc450f8c1ae3",
+        "hash_cont_tokens": "7b8cdc450f8c1ae3"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:exam_math|0": {
+      "hashes": {
+        "hash_examples": "76dc64944260c39e",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "a0e5cb33a366fdfe",
+        "hash_cont_tokens": "a0e5cb33a366fdfe"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:finer|0": {
+      "hashes": {
+        "hash_examples": "87fb0b0c9449d233",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:hartak|0": {
+      "hashes": {
+        "hash_examples": "488da0ef0c2c7564",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "642b33505cd23438",
+        "hash_cont_tokens": "642b33505cd23438"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:include|0": {
+      "hashes": {
+        "hash_examples": "75a5dcd9da22606a",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:mmlu_pro|0": {
+      "hashes": {
+        "hash_examples": "4a83a60e2d262bbe",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "f8bc2dd75fb9e534",
+        "hash_cont_tokens": "f8bc2dd75fb9e534"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:ms_marco|0": {
+      "hashes": {
+        "hash_examples": "7c6d9902d857e65c",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:paraphrase|0": {
+      "hashes": {
+        "hash_examples": "a235c34351c3b494",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:pioner|0": {
+      "hashes": {
+        "hash_examples": "8d7b87b40351b3fa",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:pos|0": {
+      "hashes": {
+        "hash_examples": "f847ec0c84fbb8f6",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:punctuation|0": {
+      "hashes": {
+        "hash_examples": "17280fa9c6036ca2",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:scientific|0": {
+      "hashes": {
+        "hash_examples": "24fb2c4597a6349d",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:sentiment|0": {
+      "hashes": {
+        "hash_examples": "d4822fdda361e526",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:short_sentences_translation|0": {
+      "hashes": {
+        "hash_examples": "2a7e01ca7fc6d3ce",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:space_fix|0": {
+      "hashes": {
+        "hash_examples": "09ab4c6595904004",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "b6562be0a62bd2fb",
+        "hash_cont_tokens": "b6562be0a62bd2fb"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:squad|0": {
+      "hashes": {
+        "hash_examples": "b2aababeb93431c8",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:syndarin|0": {
+      "hashes": {
+        "hash_examples": "14a5420cdcd22e75",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "0a8592b272c91d79",
+        "hash_cont_tokens": "0a8592b272c91d79"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    },
+    "armenian:topic-14class|0": {
+      "hashes": {
+        "hash_examples": "41bd23840bd770b9",
+        "hash_full_prompts": "ef46db3751d8e999",
+        "hash_input_tokens": "58b1377987d4d549",
+        "hash_cont_tokens": "58b1377987d4d549"
+      },
+      "truncated": 0,
+      "non_truncated": 0,
+      "padded": 0,
+      "non_padded": 0
+    }
+  },
+  "summary_general": {
+    "hashes": {
+      "hash_examples": "af9946592cdec5d6",
+      "hash_full_prompts": "72e4db8639f8b73e",
+      "hash_input_tokens": "c3ee192860233fa9",
+      "hash_cont_tokens": "c3ee192860233fa9"
+    },
+    "truncated": 0,
+    "non_truncated": 0,
+    "padded": 0,
+    "non_padded": 0
+  }
+}
